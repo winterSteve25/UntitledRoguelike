@@ -10,14 +10,15 @@ namespace Combat
     public class CombatManager : MonoBehaviour
     {
         public static CombatManager Current { get; private set; }
-        
+
         public List<Unit> ActiveUnits { get; private set; }
         public bool FriendlyTurn { get; private set; }
         public int TurnNumber { get; private set; }
-        
+
         public event Action<int, bool> OnTurnChanged;
 
         private int _playerEnergy;
+
         public int PlayerEnergy
         {
             get => _playerEnergy;
@@ -31,6 +32,7 @@ namespace Combat
         [SerializeField] private int maxEnergy;
         [SerializeField] private Level level;
         [SerializeField] private CombatInfoUI infoUI;
+        [SerializeField] private SelectedUnitUI selectedUnitUI;
 
         private void Awake()
         {
@@ -53,6 +55,7 @@ namespace Combat
             TurnNumber++;
             FriendlyTurn = TurnNumber % 2 == 0;
             OnTurnChanged?.Invoke(TurnNumber, FriendlyTurn);
+            selectedUnitUI.UnitInteractableChange(FriendlyTurn);
 
             if (FriendlyTurn)
             {
@@ -89,6 +92,24 @@ namespace Combat
                            u.Type.Size.x, u.Type.Size.y,
                            position.x, position.y,
                            unitType.Size.x, unitType.Size.y));
+        }
+
+        public bool CanMoveTo(Unit unit, Vector2Int position)
+        {
+            if (!Level.Current.InBounds(unit.GridPosition, unit.Type.Size)) return false;
+            
+            foreach (var u in ActiveUnits)
+            {
+                var overlap = RectangleTester.AreRectanglesOverlapping(position.x, position.y, unit.Type.Size.x,
+                    unit.Type.Size.y, u.GridPosition.x, u.GridPosition.y, u.Type.Size.x, u.Type.Size.y);
+
+                if (!overlap) continue;
+                if (ReferenceEquals(unit, u)) continue;
+
+                return false;
+            }
+
+            return true;
         }
 
         public bool TryGetUnit(int x, int y, out Unit unit)

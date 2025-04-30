@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using Levels;
-using NUnit.Framework;
 using PrimeTween;
 using TMPro;
 using UnityEngine;
@@ -16,18 +14,21 @@ namespace Combat
         [SerializeField] private Camera cam;
         [SerializeField] private CanvasGroup panel;
 
-        [Header("UI Elements")] 
-        [SerializeField] private TMP_Text unitName;
+        [Header("UI Elements")] [SerializeField]
+        private TMP_Text unitName;
+
         [SerializeField] private TMP_Text hp;
         [SerializeField] private RectTransform btnsGroup;
         [SerializeField] private Button abilityBtnPrefab;
 
         private Unit _showing;
         private List<Button> _abilityBtns;
+        private bool _canOpenMenu;
 
         private void Start()
         {
             _abilityBtns = new List<Button>();
+            _canOpenMenu = true;
         }
 
         private void OnEnable()
@@ -43,9 +44,10 @@ namespace Combat
 
         private void Update()
         {
+            if (!_canOpenMenu) return;
             if (!Mouse.current.leftButton.wasPressedThisFrame) return;
             if (EventSystem.current.IsPointerOverGameObject()) return;
-            
+
             var wp = cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             wp.z = 0;
             var gp = Level.Current.Tilemap.WorldToCell(wp);
@@ -54,11 +56,11 @@ namespace Combat
                 Show(null);
                 return;
             }
-            
+
             Show(unit);
         }
 
-        private void Show(Unit unit)
+        public void Show(Unit unit)
         {
             Unsubscribe(_showing);
             var panelTransform = (RectTransform)panel.transform;
@@ -68,6 +70,13 @@ namespace Combat
                 Tween.UIPivotY(panelTransform, 1, 0.1f);
                 Tween.UIAnchoredPositionY(panelTransform, -50, 0.2f);
                 _showing = null;
+
+                foreach (var btn in _abilityBtns)
+                {
+                    Destroy(btn.gameObject);
+                }
+
+                _abilityBtns.Clear();
                 return;
             }
 
@@ -81,14 +90,16 @@ namespace Combat
             {
                 Destroy(btn.gameObject);
             }
-            
+
             _abilityBtns.Clear();
+
             unitName.text = unit.Type.Name;
             _showing = unit;
             ChangeHp(unit, 0, unit.Hp);
 
             foreach (var ability in unit.Abilities)
             {
+                // TODO: Use pools
                 var btn = Instantiate(abilityBtnPrefab, btnsGroup);
                 btn.interactable = unit.Interactable && CombatManager.Current.FriendlyTurn == unit.Friendly;
                 btn.GetComponentInChildren<TMP_Text>().text = $"{ability.Name} ({ability.Cost})";
@@ -99,11 +110,11 @@ namespace Combat
                     {
                         return;
                     }
-                    
+
                     combatManager.PlayerEnergy -= ability.Cost;
                     ability.Perform(combatManager, unit);
                 });
-                
+
                 _abilityBtns.Add(btn);
             }
 
@@ -111,18 +122,23 @@ namespace Combat
             Subscribe(_showing);
         }
 
+        public void CanOpenMenu(bool value)
+        {
+            _canOpenMenu = value;
+        }
+
         private void Subscribe(Unit unit)
         {
             if (unit == null) return;
             unit.OnHpChanged += ChangeHp;
-            unit.OnInteractabilityChanged += InteractableChange;
+            unit.OnInteractabilityChanged += UnitInteractableChange;
         }
 
         private void Unsubscribe(Unit unit)
         {
             if (unit == null) return;
             unit.OnHpChanged -= ChangeHp;
-            unit.OnInteractabilityChanged -= InteractableChange;
+            unit.OnInteractabilityChanged -= UnitInteractableChange;
         }
 
         private void ChangeHp(Unit unit, int original, int current)
@@ -130,7 +146,7 @@ namespace Combat
             hp.text = $"Hp: {current}/{unit.Type.MaxHp}";
         }
 
-        private void InteractableChange(bool interactable)
+        public void UnitInteractableChange(bool interactable)
         {
             foreach (var btn in _abilityBtns)
             {
@@ -141,7 +157,7 @@ namespace Combat
         private void TurnChanged(int turnNumber, bool friendly)
         {
             if (_showing == null) return;
-            
+
             foreach (var btn in _abilityBtns)
             {
                 btn.interactable = btn.interactable && friendly == _showing.Friendly;

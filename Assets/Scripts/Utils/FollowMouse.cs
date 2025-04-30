@@ -1,5 +1,6 @@
 using System;
 using Levels;
+using PrimeTween;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -66,11 +67,26 @@ namespace Utils
                         _parentCanvas.transform as RectTransform, mousePosition,
                         _parentCanvas.worldCamera, out var pos);
 
-                    _transform.position = _parentCanvas.transform.TransformPoint(pos + offset);
+                    if (useSnappedPosition)
+                    {
+                        Tween.Position(_transform, _parentCanvas.transform.TransformPoint(pos + offset), 0.15f);
+                    }
+                    else
+                    {
+                        _transform.position = _parentCanvas.transform.TransformPoint(pos + offset);
+                    }
+
                     break;
                 case RenderMode.ScreenSpaceOverlay:
                 {
-                    _transform.position = new Vector3(mousePosition.x, mousePosition.y, 0);
+                    if (useSnappedPosition)
+                    {
+                        Tween.Position(_transform, new Vector3(mousePosition.x, mousePosition.y, 0), 0.15f);
+                    }
+                    else
+                    {
+                        _transform.position = new Vector3(mousePosition.x, mousePosition.y, 0);
+                    }
 
                     if (!changePivot) break;
 

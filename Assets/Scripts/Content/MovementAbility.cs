@@ -15,14 +15,8 @@ namespace Content
         public async UniTaskVoid Perform(CombatManager combatManager, Unit unit)
         {
             var area = await AreaSelector.Current.SelectArea(unit.GridPosition, unit.Type.Size, movementRadius,
-                movementMode);
+                p => combatManager.CanMoveTo(unit, p), movementMode);
 
-            if (!combatManager.CanPlaceUnitAt(unit.Type, area))
-            {
-                Debug.Log("CANT GO THERE!");
-                return;
-            }
-            
             unit.MoveTo(area);
         }
     }

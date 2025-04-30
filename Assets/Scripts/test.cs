@@ -21,10 +21,5 @@ public class test : MonoBehaviour
     {
         if (!Keyboard.current.spaceKey.wasPressedThisFrame) return;
         CombatManager.Current.NextTurn();
-        
-        foreach (var it in inventoryUI._items)
-        {
-            Debug.Log($"{it.Position} - {it.Item}");
-        }
     }
 }

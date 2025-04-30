@@ -1,7 +1,11 @@
+using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Levels;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using UnityEngine.Pool;
 
 namespace Combat
 {
@@ -10,19 +14,37 @@ namespace Combat
         public static AreaSelector Current { get; private set; }
 
         [SerializeField] private Camera cam;
+        [SerializeField] private SelectedUnitUI selectedUnitUI;
+        [SerializeField] private GameObject movablePrefab;
 
-        private bool _ready = false;
-        private bool _selecting = false;
+        private bool _ready;
+        private bool _selecting;
         private Vector2Int _selected;
 
         private Vector2Int _center;
         private Vector2Int _destSize;
-        private int _radius;
         private SpotSelectionMode _mode;
+        private int _radius;
+        private Predicate<Vector2Int> _isValid;
+
+        private IObjectPool<GameObject> _moveablePool;
+        private List<GameObject> _activeObjects;
 
         private void Awake()
         {
             Current = this;
+        }
+
+        private void Start()
+        {
+            _moveablePool = new ObjectPool<GameObject>(
+                () => Instantiate(movablePrefab, transform),
+                obj => obj.SetActive(true),
+                obj => obj.SetActive(false),
+                Destroy,
+                false
+            );
+            _activeObjects = new List<GameObject>();
         }
 
         private void OnDestroy()
@@ -36,14 +58,14 @@ namespace Combat
                 return;
 
             if (!Mouse.current.leftButton.wasPressedThisFrame) return;
-            
+
             var screenPos = Mouse.current.position.ReadValue();
             var worldPos = cam.ScreenToWorldPoint(screenPos);
-            var clickedTile = new Vector2Int(Mathf.FloorToInt(worldPos.x), Mathf.FloorToInt(worldPos.y));
+            worldPos.z = 0;
+            var clickedTile = Level.Current.WorldToCell(worldPos);
 
-            if (IsValid(clickedTile))
+            if (_isValid(clickedTile) && IsValid(clickedTile))
             {
-                Debug.Log(clickedTile);
                 _selected = clickedTile;
                 _ready = true;
                 _selecting = false;
@@ -56,58 +78,59 @@ namespace Combat
         // if the destination size is non symmetric => destSize.x != destSize.y 
         // then the mouse will select from the top left corner => only top left has to be within radius.
         public async UniTask<Vector2Int> SelectArea(Vector2Int center, Vector2Int destinationSize, int radius,
-            SpotSelectionMode mode = SpotSelectionMode.Omnidirectional)
+            Predicate<Vector2Int> isValid, SpotSelectionMode mode = SpotSelectionMode.Omnidirectional)
         {
             _center = center;
             _destSize = destinationSize;
             _radius = radius;
             _mode = mode;
+            _isValid = isValid;
 
             _ready = false;
             _selecting = true;
+            selectedUnitUI.Show(null);
+            selectedUnitUI.CanOpenMenu(false);
+
+            for (int i = -radius; i <= radius; i++)
+            {
+                for (int j = -radius; j <= radius; j++)
+                {
+                    var pos = new Vector2Int(center.x + i, center.y + j);
+                    if (!_isValid(pos) || !IsValid(pos)) continue;
+                    var wp = Level.Current.CellToWorld(pos);
+                    var visual = _moveablePool.Get();
+                    visual.transform.position = wp;
+                    _activeObjects.Add(visual);
+                }
+            }
 
             await UniTask.WaitUntil(() => _ready);
+
+            selectedUnitUI.CanOpenMenu(true);
+            foreach (var o in _activeObjects)
+            {
+                _moveablePool.Release(o);
+            }
+
+            _activeObjects.Clear();
+
             return _selected;
         }
 
         private bool IsValid(Vector2Int target)
         {
-            Vector2Int anchor;
+            if (target == _center) return false;
+            if (target.x - _center.x > _radius || target.y - _center.y > _radius)
+                return false;
 
-            bool hasCenter = _destSize.x % 2 == 1 && _destSize.y % 2 == 1;
-            if (hasCenter)
+            if (_mode == SpotSelectionMode.Straight)
             {
-                // Odd-sized area: target tile is the center
-                anchor = target;
+                if (target.x != _center.x || target.y != _center.y) return false;
             }
-            else
+            else if (_mode == SpotSelectionMode.Diagonal)
             {
-                // Even-sized or asymmetric area: target tile is top-left corner
-                // Compute center from top-left
-                anchor = target + new Vector2Int(_destSize.x / 2, _destSize.y / 2);
-            }
-            
-            Debug.Log(hasCenter);
-
-            Vector2Int offset = anchor - _center;
-            int dx = Mathf.Abs(offset.x);
-            int dy = Mathf.Abs(offset.y);
-            
-            Debug.Log(offset);
-
-            switch (_mode)
-            {
-                case SpotSelectionMode.Straight:
-                    if (dx != 0 && dy != 0) return false;
-                    if (dx + dy > _radius) return false;
-                    break;
-                case SpotSelectionMode.Diagonal:
-                    if (dx != dy) return false;
-                    if (dx > _radius) return false;
-                    break;
-                case SpotSelectionMode.Omnidirectional:
-                    if (dx + dy > _radius) return false;
-                    break;
+                var rel = target - _center;
+                if (rel.x != rel.y) return false;
             }
 
             return true;
