@@ -1,4 +1,5 @@
 using System;
+using Levels;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,6 +9,7 @@ namespace Utils
     {
         [SerializeField] private Vector2 offset;
         [SerializeField] private bool changePivot;
+        [SerializeField] private bool snapToGridIfPossible;
 
         private RectTransform _rectTransform;
         private Transform _transform;
@@ -32,7 +34,17 @@ namespace Utils
         public void UpdatePosition()
         {
             var mousePosition = Mouse.current.position.ReadValue();
+
+            var wp = _parentCanvas.worldCamera.ScreenToWorldPoint(mousePosition);
+            wp.z = 0;
+            var gp = Level.Current.WorldToCell(wp);
+            var useSnappedPosition = snapToGridIfPossible && CanSnapToGrid(gp);
             
+            if (useSnappedPosition)
+            {
+                mousePosition = _parentCanvas.worldCamera.WorldToScreenPoint(GetMousePositionOnGrid(gp));
+            }
+
             switch (_parentCanvas.renderMode)
             {
                 case RenderMode.ScreenSpaceCamera:
@@ -60,6 +72,18 @@ namespace Utils
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private bool CanSnapToGrid(Vector2Int gp)
+        {
+            return Level.Current.InBounds(gp, Vector2Int.one);
+        }
+
+        private Vector2 GetMousePositionOnGrid(Vector2Int gp)
+        {
+            var wp = Level.Current.CellToWorld(gp);
+            wp.z = 0;
+            return wp;
         }
     }
 }

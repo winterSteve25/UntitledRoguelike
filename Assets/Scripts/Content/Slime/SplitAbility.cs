@@ -6,9 +6,25 @@ namespace Content.Slime
 {
     public class SplitAbility : MonoBehaviour, IAbility
     {
-        public async UniTaskVoid Perform(CombatManager combatManager)
+        public string Name => "Split";
+        public int Cost => 1;
+
+        public async UniTaskVoid Perform(CombatManager combatManager, Unit unit)
         {
-            await UniTask.DelayFrame(1);
+            unit.Interactable = false;
+            await IAbility.UntilNextFriendlyTurn(combatManager);
+            combatManager.RemoveUnit(unit);
+
+            var smallSlime = Resources.Load<UnitType>("UnitTypes/Slime Small");
+            
+            combatManager.SpawnUnit(
+                smallSlime, new Vector2Int(unit.GridPosition.x, unit.GridPosition.y), unit.Friendly);
+            combatManager.SpawnUnit(
+                smallSlime, new Vector2Int(unit.GridPosition.x + 1, unit.GridPosition.y), unit.Friendly);
+            combatManager.SpawnUnit(
+                smallSlime, new Vector2Int(unit.GridPosition.x, unit.GridPosition.y + 1), unit.Friendly);
+            combatManager.SpawnUnit(
+                smallSlime, new Vector2Int(unit.GridPosition.x + 1, unit.GridPosition.y + 1), unit.Friendly);
         }
     }
 }

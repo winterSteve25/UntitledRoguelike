@@ -10,8 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2444409799b9441aa94b29bc0c1e8b3b, type: 3}
-  m_Name: Queen
+  m_Name: Slime Small
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Queen
-  <Size>k__BackingField: {x: 1, y: 2}
-  <Prefab>k__BackingField: {fileID: 866934823247284874, guid: cc84dcd06e295294da2f9da42557fd8e, type: 3}
+  <Prefab>k__BackingField: {fileID: 866934823247284874, guid: fcbfb3377af96584fb6e28d6b20840b7, type: 3}
+  <Name>k__BackingField: Slime (Small)
+  <Size>k__BackingField: {x: 1, y: 1}
+  <MaxHp>k__BackingField: 1
+  <Cost>k__BackingField: 1
+  useCustomOffset: 0
+  placementOffset: {x: 0, y: 0}

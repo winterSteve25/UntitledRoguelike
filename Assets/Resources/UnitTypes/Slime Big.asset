@@ -10,8 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2444409799b9441aa94b29bc0c1e8b3b, type: 3}
-  m_Name: Slime
+  m_Name: Slime Big
   m_EditorClassIdentifier: 
+  <Prefab>k__BackingField: {fileID: 866934823247284874, guid: e6154a2b75a834049af463272cb7c1d0, type: 3}
   <Name>k__BackingField: Slime
   <Size>k__BackingField: {x: 2, y: 2}
-  <Prefab>k__BackingField: {fileID: 866934823247284874, guid: e6154a2b75a834049af463272cb7c1d0, type: 3}
+  <MaxHp>k__BackingField: 4
+  <Cost>k__BackingField: 1
+  useCustomOffset: 0
+  placementOffset: {x: 0, y: 0}

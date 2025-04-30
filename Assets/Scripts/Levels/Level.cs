@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -7,6 +6,7 @@ namespace Levels
     public class Level : MonoBehaviour
     {
         public static Level Current { get; private set; }
+        public Tilemap Tilemap => tilemap;
         
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private Vector2Int levelSize;
@@ -36,6 +36,12 @@ namespace Levels
         public Vector3 CellToWorld(Vector2Int pos)
         {
             return tilemap.CellToWorld(new Vector3Int(pos.x, pos.y, 0));
+        }
+
+        public Vector2Int WorldToCell(Vector3 pos)
+        {
+            var gp = tilemap.WorldToCell(pos);
+            return new Vector2Int(gp.x, gp.y);
         }
 
         public bool InBounds(Vector2Int point, Vector2Int size)

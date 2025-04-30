@@ -6,7 +6,7 @@ using Utils;
 
 namespace Deck
 {
-    public class Inventory : MonoBehaviour
+    public class InventoryUI : MonoBehaviour
     {
         [SerializeField] private GridLayoutGroup gridLayout;
         [SerializeField] private Canvas canvas;

@@ -1,19 +1,26 @@
 using Combat;
 using Deck;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
-namespace DefaultNamespace
+public class test : MonoBehaviour
 {
-    public class test : MonoBehaviour
-    {
-        [SerializeField] private Inventory inventory;
-        [SerializeField] private UnitType a;
-        [SerializeField] private UnitType b;
+    [FormerlySerializedAs("inventory")] [SerializeField] private InventoryUI inventoryUI;
+    [SerializeField] private UnitType a;
+    [SerializeField] private UnitType b;
+    [SerializeField] private Camera cam;
         
-        private void Start()
-        {
-            inventory.AddItem(a, new Vector2Int(0, 0));
-            inventory.AddItem(b, new Vector2Int(2, 0));
-        }
+    private void Start()
+    {
+        inventoryUI.AddItem(a, new Vector2Int(0, 0));
+        inventoryUI.AddItem(b, new Vector2Int(2, 0));
+        CombatManager.Current.NextTurn();
+    }
+
+    private void Update()
+    {
+        if (!Keyboard.current.spaceKey.wasPressedThisFrame) return;
+        CombatManager.Current.NextTurn();
     }
 }
