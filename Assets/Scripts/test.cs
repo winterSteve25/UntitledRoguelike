@@ -2,11 +2,10 @@ using Combat;
 using Deck;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 public class test : MonoBehaviour
 {
-    [FormerlySerializedAs("inventory")] [SerializeField] private InventoryUI inventoryUI;
+    [SerializeField] private InventoryUI inventoryUI;
     [SerializeField] private UnitType a;
     [SerializeField] private UnitType b;
     [SerializeField] private Camera cam;
@@ -22,5 +21,10 @@ public class test : MonoBehaviour
     {
         if (!Keyboard.current.spaceKey.wasPressedThisFrame) return;
         CombatManager.Current.NextTurn();
+        
+        foreach (var it in inventoryUI._items)
+        {
+            Debug.Log($"{it.Position} - {it.Item}");
+        }
     }
 }

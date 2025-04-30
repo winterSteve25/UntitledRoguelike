@@ -51,8 +51,8 @@ namespace Deck
         {
             RectTransform rectTransform = (RectTransform)transform;
             _followMouse = true;
-            rectTransform.pivot = new Vector2((1f / _thisInstance.Item.Size.x) * 0.5f,
-                1 - (1f / _thisInstance.Item.Size.y) * 0.5f);
+            rectTransform.pivot = new Vector2(1f / _thisInstance.Item.Size.x * 0.5f,
+                (1f / _thisInstance.Item.Size.y) * 0.5f);
             followBehaviour.enabled = true;
             followBehaviour.UpdatePosition();
             image.raycastTarget = false;
@@ -62,7 +62,7 @@ namespace Deck
         {
             RectTransform rectTransform = (RectTransform)transform;
             _followMouse = false;
-            rectTransform.pivot = new Vector2(0, 1);
+            rectTransform.pivot = new Vector2(0, 0);
             followBehaviour.enabled = false;
             transform.position = _slot.transform.position;
             image.raycastTarget = true;

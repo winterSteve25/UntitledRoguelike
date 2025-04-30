@@ -14,6 +14,8 @@ namespace Utils
         private RectTransform _rectTransform;
         private Transform _transform;
         private Canvas _parentCanvas;
+        private Vector2 _originPivot;
+        private bool _wasOnGrid;
 
         private void Awake()
         {
@@ -39,10 +41,22 @@ namespace Utils
             wp.z = 0;
             var gp = Level.Current.WorldToCell(wp);
             var useSnappedPosition = snapToGridIfPossible && CanSnapToGrid(gp);
-            
+
             if (useSnappedPosition)
             {
+                if (!_wasOnGrid)
+                {
+                    _originPivot = _rectTransform.pivot;
+                }
+
                 mousePosition = _parentCanvas.worldCamera.WorldToScreenPoint(GetMousePositionOnGrid(gp));
+                _rectTransform.pivot = new Vector2(0.5f, 0);
+                _wasOnGrid = true;
+            }
+            else if (_wasOnGrid)
+            {
+                _wasOnGrid = false;
+                _rectTransform.pivot = _originPivot;
             }
 
             switch (_parentCanvas.renderMode)

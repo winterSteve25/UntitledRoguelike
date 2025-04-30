@@ -46,7 +46,7 @@ namespace Levels
 
         public bool InBounds(Vector2Int point, Vector2Int size)
         {
-            return point.x >= 0 && point.x + size.x < levelSize.x && point.y >= 0 && point.y + size.y < levelSize.y;
+            return point.x >= 0 && point.x + size.x <= levelSize.x && point.y >= 0 && point.y + size.y <= levelSize.y;
         }
     }
 }

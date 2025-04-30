@@ -14,7 +14,7 @@ namespace Deck
         [SerializeField] private Slot slotPrefab;
         [SerializeField] private ItemVisual visualPrefab;
 
-        private List<ItemInstance> _items;
+        public List<ItemInstance> _items;
         private Slot[,] _slots;
         private RectTransform _rectTransform;
 
@@ -33,7 +33,7 @@ namespace Deck
                 gridLayout.spacing.y * Mathf.Max(0, size.y - 1));
 
             // y loop first b/c grid layout works like that
-            for (var j = 0; j < size.y; j++)
+            for (var j = size.y - 1; j >= 0; j--)
             {
                 for (var i = 0; i < size.x; i++)
                 {

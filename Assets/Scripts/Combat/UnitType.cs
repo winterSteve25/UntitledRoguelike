@@ -43,7 +43,7 @@ namespace Combat
                 offset = new Vector2Int(Mathf.Max(0, Size.x - 1), Mathf.Max(0, Size.y - 1));
             }
             
-            return new Vector2Int(gridPosition.x, gridPosition.y) - offset;
+            return new Vector2Int(gridPosition.x, gridPosition.y);
         }
     }
 }
