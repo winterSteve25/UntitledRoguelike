@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -5,9 +6,16 @@ namespace Levels
 {
     public class Level : MonoBehaviour
     {
+        public static Level Current { get; private set; }
+        
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private Vector2Int levelSize;
         [SerializeField] private TileBase filler;
+
+        private void Awake()
+        {
+            Current = this;
+        }
 
         private void Start()
         {
@@ -18,6 +26,11 @@ namespace Levels
                     tilemap.SetTile(new Vector3Int(i, j, 0), filler);
                 }
             }
+        }
+
+        private void OnDestroy()
+        {
+            Current = null;
         }
 
         public Vector3 CellToWorld(Vector2Int pos)
