@@ -8,6 +8,7 @@ namespace Content.General
     {
         [SerializeField] private int turnCount;
         [SerializeField] private bool friendlyOnly;
+        [SerializeField] private bool atStart;
         [SerializeField] private ItemType itemType;
 
         private int _counter;
@@ -15,21 +16,19 @@ namespace Content.General
         public void OnSpawned(Unit unit)
         {
             unit.OnNewTurn += UnitOnOnNewTurn;
-        }
-
-        public void OnDespawned(Unit unit)
-        {
-            unit.OnNewTurn -= UnitOnOnNewTurn;
+            _counter = 0;
         }
 
         private void UnitOnOnNewTurn(Unit unit, bool friendlyturn)
         {
-            if (!friendlyturn && friendlyOnly) return;
+            if (atStart && (!friendlyturn && friendlyOnly)) return;
+            if (!atStart && (friendlyturn || !friendlyOnly)) return;
+
             _counter++;
             if (_counter != turnCount) return;
-            
+
             _counter = 0;
-            var inventory = unit.Friendly 
+            var inventory = unit.Friendly
                 ? CombatManager.Current.PlayerInventory
                 : EnemyManager.Current.Inventory;
 

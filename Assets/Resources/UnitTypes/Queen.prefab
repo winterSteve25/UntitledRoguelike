@@ -127,6 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turnCount: 2
   friendlyOnly: 1
+  atStart: 0
   itemType: {fileID: 11400000, guid: bd8945150c1a8e54f89884d01d9b7a4f, type: 2}
 --- !u!1 &8122594712607699113
 GameObject:

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2808227183690810272}
   - component: {fileID: 3269955522107843887}
+  - component: {fileID: 769225175027185178}
   m_Layer: 0
   m_Name: Abilities
   m_TagString: Untagged
@@ -45,7 +46,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <MovementRadius>k__BackingField: 2
-  <MovementMode>k__BackingField: 0
+  <MovementMode>k__BackingField: 2
+--- !u!114 &769225175027185178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3139600034426546588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ee9cb887e9489182d070cfdb207a0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 0.5
+  attackRadius: 1
+  mode: 2
 --- !u!1 &5805107507205697238
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,11 +12,6 @@ namespace Content.Slime
             unit.OnDeath += UnitOnOnDeath;
         }
         
-        public void OnDespawned(Unit unit)
-        {
-            unit.OnDeath -= UnitOnOnDeath;
-        }
-        
         private void UnitOnOnDeath(Unit unit)
         {
             var combatManager = CombatManager.Current;

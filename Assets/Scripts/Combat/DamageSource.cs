@@ -3,6 +3,7 @@ namespace Combat
     public enum DamageSource
     {
         Poison,
-        Healing
+        Healing,
+        Bludgeoning,
     }
 }

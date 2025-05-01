@@ -54,6 +54,19 @@ namespace Combat
             Hp = Type.MaxHp;
 
             transform.position = worldPosition;
+
+            foreach (var passive in Passives)
+            {
+                passive.OnSpawned(this);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            OnDeath = null;
+            OnNewTurn = null;
+            OnHpChange = null;
+            OnInteractabilityChanged = null;
         }
 
         public void NextTurn(bool friendlyTurn)

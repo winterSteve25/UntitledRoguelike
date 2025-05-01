@@ -28,7 +28,7 @@ namespace Deck
                     var pos = new Vector2Int(i, j);
                     if (!CanPlaceAt(itemType, pos)) continue;
                     AddItem(itemType, pos, true);
-                    break;
+                    return;
                 }
             }
         }

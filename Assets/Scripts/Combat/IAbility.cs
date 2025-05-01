@@ -7,7 +7,18 @@ namespace Combat
         string Name { get; }
         int Cost { get; }
         
-        UniTaskVoid Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector);
+        /// <summary>
+        /// Should wait for ability to finish before subtracting energy cost
+        /// When this is true, the bool returned from Perform will determine if the action was successful
+        /// And if the energy should be subtracted
+        /// </summary>
+        bool Blocking { get; }
+        
+        /// <summary>
+        /// Performs the action
+        /// </summary>
+        /// <seealso cref="Blocking"/>
+        UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector);
         
         protected static async UniTask UntilNextTurn(CombatManager combatManager)
         {

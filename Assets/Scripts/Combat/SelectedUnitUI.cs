@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Levels;
 using PrimeTween;
 using TMPro;
@@ -97,7 +98,7 @@ namespace Combat
             unitName.text = unit.Type.Name;
             _showing = unit;
             ChangeHp(unit, 0, unit.Hp, DamageSource.Healing, null);
-            
+
             var combatManager = CombatManager.Current;
             var areaSelector = PlayerAreaSelector.Current;
 
@@ -116,8 +117,21 @@ namespace Combat
                         return;
                     }
 
-                    combatManager.PlayerEnergy -= ability.Cost;
-                    ability.Perform(combatManager, unit, areaSelector);
+                    if (ability.Blocking)
+                    {
+                        UniTask.Void(async () =>
+                        {
+                            var successful = await ability.Perform(combatManager, unit, areaSelector);
+                            if (!successful) return;
+                            combatManager.PlayerEnergy -= ability.Cost;
+                        });
+                    }
+                    else
+                    {
+                        combatManager.PlayerEnergy -= ability.Cost;
+                        ability.Perform(combatManager, unit, areaSelector)
+                            .Forget();
+                    }
                 });
 
                 _abilityBtns.Add((btn, ability.Cost));

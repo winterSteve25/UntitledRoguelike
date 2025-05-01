@@ -12,11 +12,6 @@ namespace Content.General
             unit.OnHpChange += UnitOnOnHpChange;
         }
 
-        public void OnDespawned(Unit unit)
-        {
-            unit.OnHpChange -= UnitOnOnHpChange;
-        }
-
         private void UnitOnOnHpChange(Unit unit, float original, float current, DamageSource source, CancelToken cancel)
         {
             if (this.source == source) cancel.Canceled = true;

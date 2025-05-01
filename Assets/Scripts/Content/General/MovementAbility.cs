@@ -8,17 +8,19 @@ namespace Content.General
     {
         public string Name => "Move";
         public int Cost => 1;
+        public bool Blocking => true;
 
         [field: SerializeField] public int MovementRadius { get; private set; }
         [field: SerializeField] public SpotSelectionMode MovementMode { get; private set; }
 
-        public async UniTaskVoid Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
+        public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
-            var area = await areaSelector
-                .SelectArea(unit.GridPosition, unit.Type.Size, MovementRadius,
-                    p => combatManager.CanMoveTo(unit, p), MovementMode);
-
-            unit.MoveTo(area);
+            var area = await areaSelector.SelectArea(unit.GridPosition, unit.Type.Size, MovementRadius,
+                p => combatManager.CanMoveTo(unit, p), MovementMode);
+            if (area == null) return false;
+            
+            unit.MoveTo(area.Value);
+            return true;
         }
     }
 }

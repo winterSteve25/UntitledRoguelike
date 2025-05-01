@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 2808227183690810272}
   - component: {fileID: 1565541842509049741}
   - component: {fileID: 1123949848759769736}
+  - component: {fileID: 5984979174179713455}
   m_Layer: 0
   m_Name: Abilities
   m_TagString: Untagged
@@ -133,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <MovementRadius>k__BackingField: 1
-  <MovementMode>k__BackingField: 0
+  <MovementMode>k__BackingField: 2
 --- !u!114 &1123949848759769736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,6 +148,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smallSlime: {fileID: 11400000, guid: bd8945150c1a8e54f89884d01d9b7a4f, type: 2}
+--- !u!114 &5984979174179713455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3139600034426546588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3ee9cb887e9489182d070cfdb207a0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 1
+  attackRadius: 1
+  mode: 2
 --- !u!1 &5805107507205697238
 GameObject:
   m_ObjectHideFlags: 0

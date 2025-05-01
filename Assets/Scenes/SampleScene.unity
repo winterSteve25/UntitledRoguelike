@@ -2926,7 +2926,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryUI: {fileID: 1559836914}
   a: {fileID: 11400000, guid: 4cfa16a3f09c3ac40943a88bd614aa5e, type: 2}
-  b: {fileID: 11400000, guid: bd8945150c1a8e54f89884d01d9b7a4f, type: 2}
+  b: {fileID: 11400000, guid: 13e10b933b70989479e7583c922b3e03, type: 2}
   cam: {fileID: 519420031}
 --- !u!4 &1895408478
 Transform:

@@ -10,8 +10,9 @@ namespace Content.Slime
         
         public string Name => "Split";
         public int Cost => 1;
+        public bool Blocking => false;
 
-        public async UniTaskVoid Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
+        public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
             unit.Interactable = false;
             await IAbility.UntilNextFriendlyTurn(combatManager);
@@ -25,6 +26,8 @@ namespace Content.Slime
                 smallSlime, new Vector2Int(unit.GridPosition.x, unit.GridPosition.y + 1), unit.Friendly);
             combatManager.SpawnUnit(
                 smallSlime, new Vector2Int(unit.GridPosition.x + 1, unit.GridPosition.y + 1), unit.Friendly);
+
+            return true;
         }
     }
 }

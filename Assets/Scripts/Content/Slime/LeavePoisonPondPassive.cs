@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Content.Slime
 {
-    public class LeavePoisonPond : MonoBehaviour, IPassive
+    public class LeavePoisonPondPassive : MonoBehaviour, IPassive
     {
         [SerializeField] private Gadget prefab;
         [SerializeField] private int duration;
@@ -11,11 +11,6 @@ namespace Content.Slime
         public void OnSpawned(Unit unit)
         {
             unit.OnDeath += UnitOnOnDeath;
-        }
-        
-        public void OnDespawned(Unit unit)
-        {
-            unit.OnDeath -= UnitOnOnDeath;
         }
         
         private void UnitOnOnDeath(Unit unit)
