@@ -5,17 +5,21 @@ using UnityEngine;
 
 namespace Combat
 {
-    public delegate void UnitHpChangedEvent(Unit unit, int original, int current);
+    public delegate void UnitHpChangeEvent(Unit unit, float original, float newHp, DamageSource source, CancelToken cancel);
     public delegate void NewTurnEvent(Unit unit, bool friendlyTurn);
+
+    public class CancelToken
+    {
+        public bool Canceled = false;
+    }
 
     public class Unit : MonoBehaviour
     {
         [SerializeField] private GameObject abilitiesParent;
         [SerializeField] private GameObject passivesParent;
 
-        public event Action OnDeath;
-        public event Action OnAttack;
-        public event UnitHpChangedEvent OnHpChanged;
+        public event Action<Unit> OnDeath;
+        public event UnitHpChangeEvent OnHpChange;
         public event NewTurnEvent OnNewTurn;
         public event Action<bool> OnInteractabilityChanged;
 
@@ -23,7 +27,7 @@ namespace Combat
         public UnitType Type { get; set; }
         public Vector2Int GridPosition { get; private set; }
         public bool Friendly { get; private set; }
-        public int Hp { get; private set; }
+        public float Hp { get; private set; }
 
         public IAbility[] Abilities { get; private set; }
         public IPassive[] Passives { get; private set; }
@@ -61,6 +65,25 @@ namespace Combat
         {
             GridPosition = position;
             Tween.Position(transform, Level.Current.CellToWorld(position), 0.2f);
+        }
+
+        public void AddHp(float amount, DamageSource source)
+        {
+            var cancel = new CancelToken();
+            OnHpChange?.Invoke(this, Hp, Hp + amount, source, cancel);
+            if (cancel.Canceled) return;
+            Hp += amount;
+
+            if (Hp <= 0)
+            {
+                Die();
+            }
+        }
+
+        private void Die()
+        {
+            OnDeath?.Invoke(this);
+            CombatManager.Current.RemoveUnit(this);
         }
     }
 }

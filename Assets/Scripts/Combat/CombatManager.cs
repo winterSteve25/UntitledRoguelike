@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Deck;
 using Levels;
 using UnityEngine;
 using Utils;
@@ -12,13 +13,14 @@ namespace Combat
         public static CombatManager Current { get; private set; }
 
         public List<Unit> ActiveUnits { get; private set; }
+        public List<Gadget> ActiveGadgets { get; private set; }
+        
         public bool FriendlyTurn { get; private set; }
         public int TurnNumber { get; private set; }
 
         public event Action<int, bool> OnTurnChanged;
 
         private int _playerEnergy;
-
         public int PlayerEnergy
         {
             get => _playerEnergy;
@@ -30,10 +32,13 @@ namespace Combat
             }
         }
 
+        public Inventory PlayerInventory => inventoryUI.Inventory;
+
         [SerializeField] private int maxEnergy;
         [SerializeField] private Level level;
         [SerializeField] private CombatInfoUI infoUI;
         [SerializeField] private SelectedUnitUI selectedUnitUI;
+        [SerializeField] private InventoryUI inventoryUI;
 
         private void Awake()
         {
@@ -43,6 +48,7 @@ namespace Combat
         private void Start()
         {
             ActiveUnits = new List<Unit>();
+            ActiveGadgets = new List<Gadget>();
         }
 
         private void OnDestroy()
@@ -66,6 +72,11 @@ namespace Combat
             foreach (var unit in ActiveUnits)
             {
                 unit.NextTurn(FriendlyTurn);
+            }
+            
+            foreach (var gadget in ActiveGadgets)
+            {
+                gadget.NextTurn(FriendlyTurn);
             }
         }
 
@@ -123,6 +134,19 @@ namespace Combat
         {
             ActiveUnits.Remove(unit);
             Destroy(unit.gameObject);
+        }
+
+        public Gadget SpawnGadget(Gadget prefab)
+        {
+            var gadget = Instantiate(prefab);
+            ActiveGadgets.Add(gadget);
+            return gadget;
+        }
+
+        public void RemoveGadget(Gadget gadget)
+        {
+            ActiveGadgets.Remove(gadget);
+            Destroy(gadget.gameObject);
         }
     }
 }

@@ -96,7 +96,7 @@ namespace Combat
 
             unitName.text = unit.Type.Name;
             _showing = unit;
-            ChangeHp(unit, 0, unit.Hp);
+            ChangeHp(unit, 0, unit.Hp, DamageSource.Healing, null);
             
             var combatManager = CombatManager.Current;
             var areaSelector = PlayerAreaSelector.Current;
@@ -135,18 +135,18 @@ namespace Combat
         private void Subscribe(Unit unit)
         {
             if (unit == null) return;
-            unit.OnHpChanged += ChangeHp;
+            unit.OnHpChange += ChangeHp;
             unit.OnInteractabilityChanged += UnitInteractableChange;
         }
 
         private void Unsubscribe(Unit unit)
         {
             if (unit == null) return;
-            unit.OnHpChanged -= ChangeHp;
+            unit.OnHpChange -= ChangeHp;
             unit.OnInteractabilityChanged -= UnitInteractableChange;
         }
 
-        private void ChangeHp(Unit unit, int original, int current)
+        private void ChangeHp(Unit unit, float original, float current, DamageSource source, CancelToken cancelToken)
         {
             hp.text = $"Hp: {current}/{unit.Type.MaxHp}";
         }

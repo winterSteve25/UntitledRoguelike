@@ -910,6 +910,7 @@ MonoBehaviour:
   level: {fileID: 1784115330}
   infoUI: {fileID: 43703653}
   selectedUnitUI: {fileID: 2085100323}
+  inventoryUI: {fileID: 1559836914}
 --- !u!4 &703146302
 Transform:
   m_ObjectHideFlags: 0

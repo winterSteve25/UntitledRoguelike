@@ -4,12 +4,21 @@ namespace Utils
 {
     public class RectangleTester
     {
-        public static bool InBound(Vector2Int size, Vector2Int position, int x, int y)
+        public static bool InBound(Vector2Int size, Vector2Int position, int x, int y, bool inclusive)
         {
-            return position.x <= x && position.y <= y &&
-                   x < position.x + size.x && y < position.y + size.y;
+            return InBound(size, position, x, y, 0, 0, inclusive);
         }
-        
+
+        public static bool InBound(Vector2Int size, Vector2Int position, int x, int y, int width, int height, bool inclusive)
+        {
+            if (inclusive)
+                return x >= position.x && x + width <= position.x + size.x && y >= position.y &&
+                       y + height <= position.y + size.y;
+            
+            return x >= position.x && x + width < position.x + size.x && y >= position.y &&
+                   y + height < position.y + size.y;
+        }
+
         public static bool AreRectanglesOverlapping(int x1, int y1, int width1, int height1,
             int x2, int y2, int width2, int height2)
         {

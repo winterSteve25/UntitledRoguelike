@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Prefab>k__BackingField: {fileID: 866934823247284874, guid: fcbfb3377af96584fb6e28d6b20840b7, type: 3}
   <Name>k__BackingField: Slime (Small)
-  <Size>k__BackingField: {x: 1, y: 1}
   <MaxHp>k__BackingField: 1
-  <Cost>k__BackingField: 1
-  useCustomOffset: 0
-  placementOffset: {x: 0, y: 0}
+  size: {x: 1, y: 1}
+  cost: 1

@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57b8afc375c04e8cb0ffe389b7d155d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <MovementRadius>k__BackingField: 0
+  <MovementRadius>k__BackingField: 2
   <MovementMode>k__BackingField: 0
 --- !u!1 &5805107507205697238
 GameObject:
@@ -192,6 +192,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5753290426067317249}
+  - component: {fileID: 8241732847866713141}
+  - component: {fileID: 3229297250955975418}
   m_Layer: 0
   m_Name: Passives
   m_TagString: Untagged
@@ -214,3 +216,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6665029119434343586}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8241732847866713141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6353254162844262950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66e72ee9a830419384a39cef81395718, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  source: 0
+--- !u!114 &3229297250955975418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6353254162844262950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e6787e917834b95bb367c34633cd998, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 5610772066564635382, guid: 2a109f7a1f950fb4ab8397ce5b2c8a3b, type: 3}
+  duration: 3

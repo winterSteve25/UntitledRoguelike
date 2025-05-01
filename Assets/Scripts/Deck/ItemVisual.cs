@@ -28,16 +28,16 @@ namespace Deck
         public void Init(InventoryUI.ItemInstanceWithVisuals item, GridLayoutGroup grid, Slot position, InventoryUI inventoryUI,
             Canvas canvas)
         {
-            followBehaviour.Init(canvas, item.Item.Size);
-            image.sprite = item.Item.Sprite;
+            followBehaviour.Init(canvas, item.ItemType.Size);
+            image.sprite = item.ItemType.Sprite;
 
             RectTransform rectTransform = (RectTransform)transform;
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
-                item.Item.Size.x * grid.cellSize.x +
-                grid.spacing.x * Mathf.Max(0, item.Item.Size.x - 1));
+                item.ItemType.Size.x * grid.cellSize.x +
+                grid.spacing.x * Mathf.Max(0, item.ItemType.Size.x - 1));
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                item.Item.Size.y * grid.cellSize.y +
-                grid.spacing.y * Mathf.Max(0, item.Item.Size.y - 1));
+                item.ItemType.Size.y * grid.cellSize.y +
+                grid.spacing.y * Mathf.Max(0, item.ItemType.Size.y - 1));
 
             _cam = canvas.worldCamera;
             _thisInstance = item;
@@ -51,8 +51,8 @@ namespace Deck
         {
             RectTransform rectTransform = (RectTransform)transform;
             _followMouse = true;
-            rectTransform.pivot = new Vector2(1f / _thisInstance.Item.Size.x * 0.5f,
-                (1f / _thisInstance.Item.Size.y) * 0.5f);
+            rectTransform.pivot = new Vector2(1f / _thisInstance.ItemType.Size.x * 0.5f,
+                (1f / _thisInstance.ItemType.Size.y) * 0.5f);
             followBehaviour.enabled = true;
             followBehaviour.UpdatePosition();
             image.raycastTarget = false;
@@ -93,7 +93,7 @@ namespace Deck
             if (_inventoryUI.CanMoveTo(_thisInstance, pos))
             {
                 _inventoryUI.RemoveItem(_slot.Pos);
-                _inventoryUI.AddItem(_thisInstance.Item, pos);
+                _inventoryUI.AddItem(_thisInstance.ItemType, pos);
             }
             else
             {
@@ -106,12 +106,12 @@ namespace Deck
             var pos = _cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var combatManager = CombatManager.Current;
             
-            if (combatManager.PlayerEnergy >= _thisInstance.Item.Cost &&
+            if (combatManager.PlayerEnergy >= _thisInstance.ItemType.Cost &&
                 combatManager.FriendlyTurn &&
-                _thisInstance.Item.CanUse(pos))
+                _thisInstance.ItemType.CanUse(pos))
             {
-                combatManager.PlayerEnergy -= _thisInstance.Item.Cost;
-                _thisInstance.Item.Use(pos);
+                combatManager.PlayerEnergy -= _thisInstance.ItemType.Cost;
+                _thisInstance.ItemType.Use(pos);
                 _inventoryUI.RemoveItem(_slot.Pos);
                 return;
             }

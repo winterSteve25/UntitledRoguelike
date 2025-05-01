@@ -88,7 +88,7 @@ namespace Combat
 
             _ready = false;
             _selecting = true;
-            
+
             var wasShowing = selectedUnitUI.Showing;
             selectedUnitUI.Show(null);
             selectedUnitUI.CanOpenMenu(false);
@@ -98,11 +98,22 @@ namespace Combat
                 for (int j = -radius; j <= radius; j++)
                 {
                     var pos = new Vector2Int(center.x + i, center.y + j);
-                    if (!_isValid(pos) || !IsValid(pos)) continue;
+                    
                     var wp = Level.Current.CellToWorld(pos);
                     var visual = _moveablePool.Get();
                     visual.transform.position = wp;
                     _activeObjects.Add(visual);
+                    visual.GetComponentInChildren<SpriteRenderer>().color = Color.white;
+                    
+                    if (!_isValid(pos))
+                    {
+                        visual.GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                    }
+                    
+                    if (!IsValid(pos))
+                    {
+                        visual.GetComponentInChildren<SpriteRenderer>().color = Color.blue;
+                    }
                 }
             }
 
@@ -128,7 +139,7 @@ namespace Combat
 
             if (_mode == SpotSelectionMode.Straight)
             {
-                if (target.x != _center.x || target.y != _center.y) return false;
+                if ((target.x != _center.x) == (target.y != _center.y)) return false;
             }
             else if (_mode == SpotSelectionMode.Diagonal)
             {

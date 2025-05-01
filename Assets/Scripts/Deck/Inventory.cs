@@ -19,45 +19,67 @@ namespace Deck
             _size = size;
         }
 
-        public bool AddItem(IItem item, Vector2Int position)
+        public void AddAnywhere(ItemType itemType)
         {
-            if (position.x < 0 || position.y < 0 || position.x > _size.x || position.y > _size.y) return false;
-            if (_items.Any(x => RectangleTester.InBound(x.Item.Size, x.Position, position.x, position.y))) return false;
-            
-            var instance = new ItemInstance(item, position);
+            for (int i = 0; i < _size.x; i++)
+            {
+                for (int j = 0; j < _size.y; j++)
+                {
+                    var pos = new Vector2Int(i, j);
+                    if (!CanPlaceAt(itemType, pos)) continue;
+                    AddItem(itemType, pos, true);
+                    break;
+                }
+            }
+        }
+
+        public void AddItem(ItemType itemType, Vector2Int position, bool skipChecks = false)
+        {
+            if (!skipChecks && !CanPlaceAt(itemType, position)) return;
+            var instance = new ItemInstance(itemType, position);
             OnItemAdded?.Invoke(instance);
             _items.Add(instance);
-
-            return true;
         }
 
         public void RemoveItem(Vector2Int position)
         {
             for (int i = 0; i < _items.Count; i++)
             {
-                if (!RectangleTester.InBound(_items[i].Item.Size, _items[i].Position, position.x, position.y)) continue;
+                if (!RectangleTester.InBound(_items[i].ItemType.Size, _items[i].Position, position.x, position.y, false))
+                    continue;
                 OnItemRemoved?.Invoke(i);
                 _items.RemoveAt(i);
                 break;
             }
         }
 
+        public bool CanPlaceAt(ItemType itemType, Vector2Int position)
+        {
+            var inBound = RectangleTester.InBound(_size, Vector2Int.zero, position.x, position.y, itemType.Size.x,
+                itemType.Size.y, true);
+            
+            return inBound && !_items.Any(x => RectangleTester.AreRectanglesOverlapping(
+                       x.Position.x, x.Position.y, x.ItemType.Size.x, x.ItemType.Size.y,
+                       position.x, position.y, itemType.Size.x, itemType.Size.y));
+        }
+
         public ItemInstance GetItem(Vector2Int position)
         {
-            return _items.FirstOrDefault(t => RectangleTester.InBound(t.Item.Size, t.Position, position.x, position.y));
+            return _items.FirstOrDefault(t =>
+                RectangleTester.InBound(t.ItemType.Size, t.Position, position.x, position.y, false));
         }
 
         public bool CanMoveTo(ItemInstance item, Vector2Int position)
         {
-            if (position.x < 0 || position.y < 0 || position.x + item.Item.Size.x > _size.x ||
-                position.y + item.Item.Size.y > _size.y)
+            if (position.x < 0 || position.y < 0 || position.x + item.ItemType.Size.x > _size.x ||
+                position.y + item.ItemType.Size.y > _size.y)
                 return false;
 
             foreach (var i in _items)
             {
-                var overlap = RectangleTester.AreRectanglesOverlapping(position.x, position.y, item.Item.Size.x,
-                    item.Item.Size.y,
-                    i.Position.x, i.Position.y, i.Item.Size.x, i.Item.Size.y);
+                var overlap = RectangleTester.AreRectanglesOverlapping(position.x, position.y, item.ItemType.Size.x,
+                    item.ItemType.Size.y,
+                    i.Position.x, i.Position.y, i.ItemType.Size.x, i.ItemType.Size.y);
 
                 if (!overlap) continue;
                 if (ReferenceEquals(item, i)) continue;
@@ -68,14 +90,22 @@ namespace Deck
             return true;
         }
 
+        public void DebugPrint()
+        {
+            foreach (var i in _items)
+            {
+                Debug.Log($"{i.Position} - {i.ItemType}");
+            }
+        }
+
         public class ItemInstance
         {
-            public readonly IItem Item;
+            public readonly ItemType ItemType;
             public readonly Vector2Int Position;
 
-            public ItemInstance(IItem item, Vector2Int position)
+            public ItemInstance(ItemType itemType, Vector2Int position)
             {
-                Item = item;
+                ItemType = itemType;
                 Position = position;
             }
         }

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Prefab>k__BackingField: {fileID: 866934823247284874, guid: 3f2a54338c45c644890917a9d9d4431c, type: 3}
   <Name>k__BackingField: Queen
-  <Size>k__BackingField: {x: 1, y: 2}
-  <MaxHp>k__BackingField: 2
-  <Cost>k__BackingField: 2
+  <MaxHp>k__BackingField: 1
+  size: {x: 1, y: 2}
+  cost: 2
   useCustomOffset: 0
   placementOffset: {x: 0, y: 0}

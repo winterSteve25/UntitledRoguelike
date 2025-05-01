@@ -12,20 +12,25 @@ namespace Editor
         [MenuItem("Assets/Create/Combat/New Unit Prefab")]
         private static void NewUnit()
         {
-            var prefabPath = $"{CurrentFolder()}/New Unit Prefab.prefab";
-            var unitTypePath = $"{CurrentFolder()}/New Unit Type.asset";
+            var currentFolder = CurrentFolder();
+            var prefabPath = $"{currentFolder}/New Unit Prefab.prefab";
+            var unitTypePath = $"{currentFolder}/New Unit Type.asset";
 
             AssetDatabase.CopyAsset("Assets/Resources/UnitTypes/Base.prefab", prefabPath);
-            var prefab = AssetDatabase.LoadAssetAtPath<Unit>(prefabPath);
 
             var unitType = ScriptableObject.CreateInstance<UnitType>();
-            unitType.Prefab = prefab;
-            prefab.Type = unitType;
             AssetDatabase.CreateAsset(unitType, unitTypePath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
 
-            var theFile = AssetDatabase.LoadAssetAtPath<UnitType>(unitTypePath);
-            EditorUtility.CopySerialized(unitType, theFile);
-            theFile.name = "New Unit Type";
+            var loadedUnitType = AssetDatabase.LoadAssetAtPath<UnitType>(unitTypePath);
+            var loadedPrefab = AssetDatabase.LoadAssetAtPath<Unit>(prefabPath);
+
+            loadedUnitType.Prefab = loadedPrefab;
+            loadedPrefab.Type = loadedUnitType;
+
+            EditorUtility.SetDirty(loadedUnitType);
+            EditorUtility.SetDirty(loadedPrefab);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }

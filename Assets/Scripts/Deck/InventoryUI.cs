@@ -67,19 +67,14 @@ namespace Deck
             _items.RemoveAt(index);
         }
 
-        public void AddItem(IItem item, Vector2Int position)
+        public void AddItem(ItemType itemType, Vector2Int position)
         {
-            _inventory.AddItem(item, position);
+            _inventory.AddItem(itemType, position);
         }
 
         public void RemoveItem(Vector2Int pos)
         {
             _inventory.RemoveItem(pos);
-        }
-        
-        public ItemInstanceWithVisuals GetItem(Vector2Int position)
-        {
-            return _items.FirstOrDefault(t => RectangleTester.InBound(t.Item.Size, t.Instance.Position, position.x, position.y));
         }
         
         public bool CanMoveTo(ItemInstanceWithVisuals item, Vector2Int position)
@@ -92,7 +87,7 @@ namespace Deck
             public readonly Inventory.ItemInstance Instance;
             public readonly ItemVisual Visual;
             
-            public IItem Item => Instance.Item;
+            public ItemType ItemType => Instance.ItemType;
 
             public ItemInstanceWithVisuals(Inventory.ItemInstance instance, ItemVisual visual)
             {

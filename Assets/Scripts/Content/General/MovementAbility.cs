@@ -2,7 +2,7 @@ using Combat;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Content
+namespace Content.General
 {
     public class MovementAbility : MonoBehaviour, IAbility
     {

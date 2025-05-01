@@ -1,22 +1,26 @@
 using Combat;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Content.Slime
 {
-    public class SplitAbility : MonoBehaviour, IAbility
+    public class SplitPassive : MonoBehaviour, IPassive
     {
         [SerializeField] private UnitType smallSlime;
         
-        public string Name => "Split";
-        public int Cost => 1;
-
-        public async UniTaskVoid Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
+        public void OnSpawned(Unit unit)
         {
-            unit.Interactable = false;
-            await IAbility.UntilNextFriendlyTurn(combatManager);
-            combatManager.RemoveUnit(unit);
-
+            unit.OnDeath += UnitOnOnDeath;
+        }
+        
+        public void OnDespawned(Unit unit)
+        {
+            unit.OnDeath -= UnitOnOnDeath;
+        }
+        
+        private void UnitOnOnDeath(Unit unit)
+        {
+            var combatManager = CombatManager.Current;
+            
             combatManager.SpawnUnit(
                 smallSlime, new Vector2Int(unit.GridPosition.x, unit.GridPosition.y), unit.Friendly);
             combatManager.SpawnUnit(

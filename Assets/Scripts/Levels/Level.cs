@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Combat;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Utils;
 
 namespace Levels
 {
@@ -41,15 +42,15 @@ namespace Levels
 
         private void OnValidate()
         {
-            tilemap.ClearAllTiles();
-            
-            for (int i = 0; i < levelSize.x; i++)
-            {
-                for (int j = 0; j < levelSize.y; j++)
-                {
-                    tilemap.SetTile(new Vector3Int(i, j, 0), filler);
-                }
-            }
+            // tilemap.ClearAllTiles();
+            //
+            // for (int i = 0; i < levelSize.x; i++)
+            // {
+            //     for (int j = 0; j < levelSize.y; j++)
+            //     {
+            //         tilemap.SetTile(new Vector3Int(i, j, 0), filler);
+            //     }
+            // }
         }
 
         public Vector3 CellToWorld(Vector2Int pos)
@@ -65,11 +66,7 @@ namespace Levels
 
         public bool InBounds(Vector2Int point, Vector2Int size)
         {
-            Debug.Log($"Checking {point} of {size}");
-            var result = point.x >= 0 && point.x + size.x <= levelSize.x && point.y >= 0 &&
-                         point.y + size.y <= levelSize.y;
-            Debug.Log(result);
-            return result;
+            return RectangleTester.InBound(levelSize, Vector2Int.zero, point.x, point.y, size.x, size.y, true);
         }
     }
 }
