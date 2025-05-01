@@ -13,7 +13,7 @@ namespace Combat
         public static CombatManager Current { get; private set; }
 
         public List<Unit> ActiveUnits { get; private set; }
-        public List<Gadget> ActiveGadgets { get; private set; }
+        public DeferredRemovalList<Gadget> ActiveGadgets { get; private set; }
         
         public bool FriendlyTurn { get; private set; }
         public int TurnNumber { get; private set; }
@@ -48,7 +48,7 @@ namespace Combat
         private void Start()
         {
             ActiveUnits = new List<Unit>();
-            ActiveGadgets = new List<Gadget>();
+            ActiveGadgets = new DeferredRemovalList<Gadget>();
         }
 
         private void OnDestroy()
@@ -78,6 +78,8 @@ namespace Combat
             {
                 gadget.NextTurn(FriendlyTurn);
             }
+            
+            ActiveGadgets.Flush();
         }
 
         public Unit SpawnUnit(UnitType unitType, Vector2Int position, bool friendly)
