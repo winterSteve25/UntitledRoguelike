@@ -9,7 +9,7 @@ namespace Content.Slime
         public string Name => "Split";
         public int Cost => 1;
 
-        public async UniTaskVoid Perform(CombatManager combatManager, Unit unit)
+        public async UniTaskVoid Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
             unit.Interactable = false;
             await IAbility.UntilNextFriendlyTurn(combatManager);

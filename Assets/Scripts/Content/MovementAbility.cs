@@ -9,13 +9,14 @@ namespace Content
         public string Name => "Move";
         public int Cost => 1;
 
-        [SerializeField] private int movementRadius;
-        [SerializeField] private SpotSelectionMode movementMode;
+        [field: SerializeField] public int MovementRadius { get; private set; }
+        [field: SerializeField] public SpotSelectionMode MovementMode { get; private set; }
 
-        public async UniTaskVoid Perform(CombatManager combatManager, Unit unit)
+        public async UniTaskVoid Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
-            var area = await AreaSelector.Current.SelectArea(unit.GridPosition, unit.Type.Size, movementRadius,
-                p => combatManager.CanMoveTo(unit, p), movementMode);
+            var area = await areaSelector
+                .SelectArea(unit.GridPosition, unit.Type.Size, MovementRadius,
+                    p => combatManager.CanMoveTo(unit, p), MovementMode);
 
             unit.MoveTo(area);
         }

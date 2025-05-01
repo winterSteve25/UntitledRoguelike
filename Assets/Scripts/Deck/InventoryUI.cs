@@ -14,15 +14,21 @@ namespace Deck
         [SerializeField] private Slot slotPrefab;
         [SerializeField] private ItemVisual visualPrefab;
 
-        public List<ItemInstance> _items;
+        private Inventory _inventory;
+        private List<ItemInstanceWithVisuals> _items;
         private Slot[,] _slots;
         private RectTransform _rectTransform;
 
+        public Inventory Inventory => _inventory;
         public Slot this[int i, int j] => _slots[i, j];
 
         private void Awake()
         {
-            _items = new List<ItemInstance>();
+            _inventory = new Inventory(size);
+            _inventory.OnItemAdded += AddItem;
+            _inventory.OnItemRemoved += RemoveItem;
+            _items = new List<ItemInstanceWithVisuals>();
+            
             _slots = new Slot [size.x, size.y];
             _rectTransform = (RectTransform)transform;
             _rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
@@ -42,76 +48,55 @@ namespace Deck
                     _slots[i, j] = slot;
                 }
             }
-
+            
             LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
         }
 
-        public bool AddItem(IItem item, Vector2Int position)
+        private void AddItem(Inventory.ItemInstance item)
         {
-            if (position.x < 0 || position.y < 0 || position.x > size.x || position.y > size.y) return false;
-            if (_items.Any(x => RectangleTester.InBound(x.Item.Size, x.Position, position.x, position.y))) return false;
-
             var visuals = Instantiate(visualPrefab, transform.parent);
-            var instance = new ItemInstance(item, position, visuals);
+            var instance = new ItemInstanceWithVisuals(item, visuals);
 
-            visuals.Init(instance, gridLayout, _slots[position.x, position.y], this, canvas);
+            visuals.Init(instance, gridLayout, _slots[item.Position.x, item.Position.y], this, canvas);
             _items.Add(instance);
-
-            return true;
+        }
+        
+        private void RemoveItem(int index)
+        {
+            Destroy(_items[index].Visual.gameObject);
+            _items.RemoveAt(index);
         }
 
-        public void RemoveItem(Vector2Int position)
+        public void AddItem(IItem item, Vector2Int position)
         {
-            for (int i = 0; i < _items.Count; i++)
-            {
-                if (!RectangleTester.InBound(_items[i].Item.Size, _items[i].Position, position.x, position.y)) continue;
-                Destroy(_items[i].Visual.gameObject);
-                _items.RemoveAt(i);
-                break;
-            }
+            _inventory.AddItem(item, position);
         }
 
-        public ItemInstance GetItem(Vector2Int position)
+        public void RemoveItem(Vector2Int pos)
         {
-            return _items.FirstOrDefault(t => RectangleTester.InBound(t.Item.Size, t.Position, position.x, position.y));
+            _inventory.RemoveItem(pos);
+        }
+        
+        public ItemInstanceWithVisuals GetItem(Vector2Int position)
+        {
+            return _items.FirstOrDefault(t => RectangleTester.InBound(t.Item.Size, t.Instance.Position, position.x, position.y));
+        }
+        
+        public bool CanMoveTo(ItemInstanceWithVisuals item, Vector2Int position)
+        {
+            return _inventory.CanMoveTo(item.Instance, position);
         }
 
-        public bool IsOccupied(Vector2Int position)
+        public class ItemInstanceWithVisuals
         {
-            return GetItem(position) != null;
-        }
-
-        public bool CanMoveTo(ItemInstance item, Vector2Int position)
-        {
-            if (position.x < 0 || position.y < 0 || position.x + item.Item.Size.x > size.x ||
-                position.y + item.Item.Size.y > size.y)
-                return false;
-            
-            foreach (var i in _items)
-            {
-                var overlap = RectangleTester.AreRectanglesOverlapping(position.x, position.y, item.Item.Size.x,
-                    item.Item.Size.y,
-                    i.Position.x, i.Position.y, i.Item.Size.x, i.Item.Size.y);
-
-                if (!overlap) continue;
-                if (ReferenceEquals(item, i)) continue;
-
-                return false;
-            }
-
-            return true;
-        }
-
-        public class ItemInstance
-        {
-            public readonly IItem Item;
-            public readonly Vector2Int Position;
+            public readonly Inventory.ItemInstance Instance;
             public readonly ItemVisual Visual;
+            
+            public IItem Item => Instance.Item;
 
-            public ItemInstance(IItem item, Vector2Int position, ItemVisual visual)
+            public ItemInstanceWithVisuals(Inventory.ItemInstance instance, ItemVisual visual)
             {
-                Item = item;
-                Position = position;
+                Instance = instance;
                 Visual = visual;
             }
         }

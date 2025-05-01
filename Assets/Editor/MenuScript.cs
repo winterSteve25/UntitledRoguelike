@@ -1,6 +1,9 @@
 using System;
+using System.IO;
 using System.Reflection;
+using Combat;
 using UnityEditor;
+using UnityEngine;
 
 namespace Editor
 {
@@ -9,7 +12,22 @@ namespace Editor
         [MenuItem("Assets/Create/Combat/New Unit Prefab")]
         private static void NewUnit()
         {
-            AssetDatabase.CopyAsset("Assets/Resources/UnitTypes/Base.prefab", $"{CurrentFolder()}/New Prefab.prefab");
+            var prefabPath = $"{CurrentFolder()}/New Unit Prefab.prefab";
+            var unitTypePath = $"{CurrentFolder()}/New Unit Type.asset";
+
+            AssetDatabase.CopyAsset("Assets/Resources/UnitTypes/Base.prefab", prefabPath);
+            var prefab = AssetDatabase.LoadAssetAtPath<Unit>(prefabPath);
+
+            var unitType = ScriptableObject.CreateInstance<UnitType>();
+            unitType.Prefab = prefab;
+            prefab.Type = unitType;
+            AssetDatabase.CreateAsset(unitType, unitTypePath);
+
+            var theFile = AssetDatabase.LoadAssetAtPath<UnitType>(unitTypePath);
+            EditorUtility.CopySerialized(unitType, theFile);
+            theFile.name = "New Unit Type";
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
         private static string CurrentFolder()

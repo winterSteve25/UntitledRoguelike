@@ -7,7 +7,7 @@ namespace Combat
         string Name { get; }
         int Cost { get; }
         
-        UniTaskVoid Perform(CombatManager combatManager, Unit unit);
+        UniTaskVoid Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector);
         
         protected static async UniTask UntilNextTurn(CombatManager combatManager)
         {

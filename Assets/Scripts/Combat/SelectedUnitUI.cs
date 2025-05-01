@@ -21,13 +21,14 @@ namespace Combat
         [SerializeField] private RectTransform btnsGroup;
         [SerializeField] private Button abilityBtnPrefab;
 
+        public Unit Showing => _showing;
         private Unit _showing;
-        private List<Button> _abilityBtns;
+        private List<(Button, int)> _abilityBtns;
         private bool _canOpenMenu;
 
-        private void Start()
+        private void Awake()
         {
-            _abilityBtns = new List<Button>();
+            _abilityBtns = new List<(Button, int)>();
             _canOpenMenu = true;
         }
 
@@ -73,7 +74,7 @@ namespace Combat
 
                 foreach (var btn in _abilityBtns)
                 {
-                    Destroy(btn.gameObject);
+                    Destroy(btn.Item1.gameObject);
                 }
 
                 _abilityBtns.Clear();
@@ -88,7 +89,7 @@ namespace Combat
 
             foreach (var btn in _abilityBtns)
             {
-                Destroy(btn.gameObject);
+                Destroy(btn.Item1.gameObject);
             }
 
             _abilityBtns.Clear();
@@ -96,26 +97,30 @@ namespace Combat
             unitName.text = unit.Type.Name;
             _showing = unit;
             ChangeHp(unit, 0, unit.Hp);
+            
+            var combatManager = CombatManager.Current;
+            var areaSelector = PlayerAreaSelector.Current;
 
             foreach (var ability in unit.Abilities)
             {
                 // TODO: Use pools
                 var btn = Instantiate(abilityBtnPrefab, btnsGroup);
-                btn.interactable = unit.Interactable && CombatManager.Current.FriendlyTurn == unit.Friendly;
+                btn.interactable = unit.Interactable
+                                   && CombatManager.Current.FriendlyTurn == unit.Friendly
+                                   && CombatManager.Current.PlayerEnergy >= ability.Cost;
                 btn.GetComponentInChildren<TMP_Text>().text = $"{ability.Name} ({ability.Cost})";
                 btn.onClick.AddListener(() =>
                 {
-                    var combatManager = CombatManager.Current;
                     if (combatManager.PlayerEnergy < ability.Cost || !combatManager.FriendlyTurn)
                     {
                         return;
                     }
 
                     combatManager.PlayerEnergy -= ability.Cost;
-                    ability.Perform(combatManager, unit);
+                    ability.Perform(combatManager, unit, areaSelector);
                 });
 
-                _abilityBtns.Add(btn);
+                _abilityBtns.Add((btn, ability.Cost));
             }
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(panelTransform);
@@ -150,7 +155,7 @@ namespace Combat
         {
             foreach (var btn in _abilityBtns)
             {
-                btn.interactable = interactable && CombatManager.Current.FriendlyTurn == _showing.Friendly;
+                btn.Item1.interactable = interactable && CombatManager.Current.FriendlyTurn == _showing.Friendly;
             }
         }
 
@@ -160,7 +165,18 @@ namespace Combat
 
             foreach (var btn in _abilityBtns)
             {
-                btn.interactable = btn.interactable && friendly == _showing.Friendly;
+                btn.Item1.interactable = btn.Item1.interactable && friendly == _showing.Friendly;
+            }
+        }
+
+        public void UpdateEnergy(int playerEnergy)
+        {
+            foreach (var btn in _abilityBtns)
+            {
+                btn.Item1.interactable =
+                    btn.Item1.interactable
+                    && CombatManager.Current.FriendlyTurn == _showing.Friendly
+                    && btn.Item2 <= playerEnergy;
             }
         }
     }

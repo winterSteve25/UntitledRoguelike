@@ -132,8 +132,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57b8afc375c04e8cb0ffe389b7d155d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementRadius: 1
-  movementMode: 2
+  <MovementRadius>k__BackingField: 0
+  <MovementMode>k__BackingField: 0
 --- !u!114 &1123949848759769736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,6 +195,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilitiesParent: {fileID: 3139600034426546588}
   passivesParent: {fileID: 6353254162844262950}
+  <Type>k__BackingField: {fileID: 11400000, guid: 4cfa16a3f09c3ac40943a88bd614aa5e, type: 2}
 --- !u!1 &6353254162844262950
 GameObject:
   m_ObjectHideFlags: 0

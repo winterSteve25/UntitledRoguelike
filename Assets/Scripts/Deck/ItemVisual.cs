@@ -14,7 +14,7 @@ namespace Deck
         [SerializeField] private FollowMouse followBehaviour;
 
         private Camera _cam;
-        private InventoryUI.ItemInstance _thisInstance;
+        private InventoryUI.ItemInstanceWithVisuals _thisInstance;
         private bool _followMouse;
         private Slot _slot;
         private InventoryUI _inventoryUI;
@@ -25,10 +25,10 @@ namespace Deck
             transform.position = _slot.transform.position;
         }
 
-        public void Init(InventoryUI.ItemInstance item, GridLayoutGroup grid, Slot position, InventoryUI inventoryUI,
+        public void Init(InventoryUI.ItemInstanceWithVisuals item, GridLayoutGroup grid, Slot position, InventoryUI inventoryUI,
             Canvas canvas)
         {
-            followBehaviour.Init(canvas);
+            followBehaviour.Init(canvas, item.Item.Size);
             image.sprite = item.Item.Sprite;
 
             RectTransform rectTransform = (RectTransform)transform;

@@ -19,8 +19,9 @@ namespace Combat
         public event NewTurnEvent OnNewTurn;
         public event Action<bool> OnInteractabilityChanged;
 
+        [field: SerializeField]
+        public UnitType Type { get; set; }
         public Vector2Int GridPosition { get; private set; }
-        public UnitType Type { get; private set; }
         public bool Friendly { get; private set; }
         public int Hp { get; private set; }
 
@@ -38,13 +39,12 @@ namespace Combat
             }
         }
 
-        public void Init(UnitType unitType, Vector2Int position, Vector2 worldPosition, bool friendly)
+        public void Init(Vector2Int position, Vector2 worldPosition, bool friendly)
         {
             Abilities = abilitiesParent.GetComponents<IAbility>();
             Passives = passivesParent.GetComponents<IPassive>();
 
             _interactable = true;
-            Type = unitType;
             GridPosition = position;
             Friendly = friendly;
             Hp = Type.MaxHp;

@@ -4,10 +4,9 @@ using UnityEngine;
 
 namespace Combat
 {
-    [CreateAssetMenu(fileName = "New Unit Type", menuName = "Combat/Unit Type")]
     public class UnitType : ScriptableObject, IItem
     {
-        [field: SerializeField] public Unit Prefab { get; private set; }
+        [field: SerializeField] public Unit Prefab { get; set; }
         
         [field: Header("Stats")]
         [field: SerializeField] public string Name { get; private set; }

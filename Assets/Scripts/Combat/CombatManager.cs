@@ -26,6 +26,7 @@ namespace Combat
             {
                 _playerEnergy = value;
                 infoUI.UpdateEnergy(_playerEnergy, maxEnergy);
+                selectedUnitUI.UpdateEnergy(_playerEnergy);
             }
         }
 
@@ -71,7 +72,7 @@ namespace Combat
         public Unit SpawnUnit(UnitType unitType, Vector2Int position, bool friendly)
         {
             var unit = Instantiate(unitType.Prefab);
-            unit.Init(unitType, position, level.CellToWorld(position), friendly);
+            unit.Init(position, level.CellToWorld(position), friendly);
             ActiveUnits.Add(unit);
             return unit;
         }
@@ -96,7 +97,7 @@ namespace Combat
 
         public bool CanMoveTo(Unit unit, Vector2Int position)
         {
-            if (!Level.Current.InBounds(unit.GridPosition, unit.Type.Size)) return false;
+            if (!Level.Current.InBounds(position, unit.Type.Size)) return false;
             
             foreach (var u in ActiveUnits)
             {

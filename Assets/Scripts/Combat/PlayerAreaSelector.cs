@@ -9,9 +9,9 @@ using UnityEngine.Pool;
 
 namespace Combat
 {
-    public class AreaSelector : MonoBehaviour
+    public class PlayerAreaSelector : MonoBehaviour, IAreaSelector
     {
-        public static AreaSelector Current { get; private set; }
+        public static PlayerAreaSelector Current { get; private set; }
 
         [SerializeField] private Camera cam;
         [SerializeField] private SelectedUnitUI selectedUnitUI;
@@ -88,6 +88,8 @@ namespace Combat
 
             _ready = false;
             _selecting = true;
+            
+            var wasShowing = selectedUnitUI.Showing;
             selectedUnitUI.Show(null);
             selectedUnitUI.CanOpenMenu(false);
 
@@ -112,6 +114,7 @@ namespace Combat
                 _moveablePool.Release(o);
             }
 
+            if (wasShowing != null) selectedUnitUI.Show(wasShowing);
             _activeObjects.Clear();
 
             return _selected;

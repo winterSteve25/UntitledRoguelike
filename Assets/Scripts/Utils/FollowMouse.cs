@@ -17,6 +17,7 @@ namespace Utils
         private Canvas _parentCanvas;
         private Vector2 _originPivot;
         private bool _wasOnGrid;
+        private Vector2Int _size;
 
         private void Awake()
         {
@@ -29,9 +30,10 @@ namespace Utils
             UpdatePosition();
         }
 
-        public void Init(Canvas parentCanvas)
+        public void Init(Canvas parentCanvas, Vector2Int size)
         {
             _parentCanvas = parentCanvas;
+            _size = size;
         }
 
         public void UpdatePosition()
@@ -106,7 +108,7 @@ namespace Utils
 
         private bool CanSnapToGrid(Vector2Int gp)
         {
-            return Level.Current.InBounds(gp, Vector2Int.one);
+            return Level.Current.InBounds(gp, _size);
         }
 
         private Vector2 GetMousePositionOnGrid(Vector2Int gp)
