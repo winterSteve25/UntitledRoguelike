@@ -1,5 +1,6 @@
 using Levels;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Combat
 {
@@ -8,11 +9,10 @@ namespace Combat
         public Vector2Int GridPosition { get; private set; }
         public abstract Vector2Int GridSize { get; }
 
-        private int _duration;
+        [SerializeField] private int duration;
 
-        public void Init(int duration, Vector2Int position)
+        public void Init(Vector2Int position)
         {
-            _duration = duration;
             GridPosition = position;
             transform.position = Level.Current.CellToWorld(position);
         }
@@ -20,8 +20,8 @@ namespace Combat
         public void NextTurn(bool friendlyTurn)
         {
             OnTurn(friendlyTurn);
-            _duration--;
-            if (_duration <= 0)
+            duration--;
+            if (duration <= 0)
             {
                 CombatManager.Current.RemoveGadget(this);
             }

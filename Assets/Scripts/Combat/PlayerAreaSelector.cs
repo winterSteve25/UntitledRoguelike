@@ -92,7 +92,7 @@ namespace Combat
         // if the destination size is > 1x1, the mouse will select the center.
         // only the center has to within the radius
         // if the destination size is non symmetric => destSize.x != destSize.y 
-        // then the mouse will select from the top left corner => only top left has to be within radius.
+        // then the mouse will select from the bottom left corner => only bottom left has to be within radius.
         public async UniTask<Vector2Int?> SelectArea(Vector2Int center, Vector2Int centerSize, int radius,
             Predicate<Vector2Int> isValid, SpotSelectionMode mode = SpotSelectionMode.Omnidirectional)
         {
@@ -106,7 +106,6 @@ namespace Combat
             _ready = false;
             _selecting = true;
 
-            var wasShowing = selectedUnitUI.Showing;
             selectedUnitUI.Show(null);
             selectedUnitUI.CanOpenMenu(false);
 
@@ -120,7 +119,7 @@ namespace Combat
                     var visual = _moveablePool.Get();
                     visual.transform.position = wp;
                     _activeObjects.Add(visual);
-                    visual.GetComponentInChildren<SpriteRenderer>().color = Color.white;
+                    visual.GetComponentInChildren<SpriteRenderer>().color = Color.gray;
 
                     if (!_isValid(pos))
                     {
@@ -142,7 +141,6 @@ namespace Combat
                 _moveablePool.Release(o);
             }
 
-            if (wasShowing != null) selectedUnitUI.Show(wasShowing);
             _activeObjects.Clear();
             
             return _selected;

@@ -53,7 +53,7 @@ namespace Utils
                 }
 
                 mousePosition = _parentCanvas.worldCamera.WorldToScreenPoint(GetMousePositionOnGrid(gp));
-                _rectTransform.pivot = new Vector2(0.5f, 0);
+                _rectTransform.pivot = new Vector2(0f, 0);
                 _wasOnGrid = true;
             }
             else if (_wasOnGrid)

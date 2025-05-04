@@ -1,12 +1,11 @@
 using Combat;
 using UnityEngine;
 
-namespace Content.Slime
+namespace Content.General
 {
-    public class LeavePoisonPondPassive : MonoBehaviour, IPassive
+    public class SpawnGadgetAfterDeathPassive : MonoBehaviour, IPassive
     {
         [SerializeField] private Gadget prefab;
-        [SerializeField] private int duration;
         
         public void OnSpawned(Unit unit)
         {
@@ -16,7 +15,7 @@ namespace Content.Slime
         private void UnitOnOnDeath(Unit unit)
         {
             var gadget = CombatManager.Current.SpawnGadget(prefab);
-            gadget.Init(duration, unit.GridPosition);
+            gadget.Init(unit.GridPosition);
         }
     }
 }

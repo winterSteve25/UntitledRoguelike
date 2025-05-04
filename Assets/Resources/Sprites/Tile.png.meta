@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e87301a6d9d7cd54eafb883aca802113
+guid: 5093d43943a060d4485a1c31c590b4ca
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7519753400087680208
-    second: Queen_0
+      213: -9163426285224168042
+    second: Tile_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Queen_0
+      name: Tile_0
       rect:
         serializedVersion: 2
-        x: 35
-        y: 19
-        width: 185
-        height: 237
+        x: 2
+        y: 2
+        width: 253
+        height: 251
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0d413c240e78b5860800000000000000
-      internalID: 7519753400087680208
+      spriteID: 6957cbfe758f4d080800000000000000
+      internalID: -9163426285224168042
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Queen_0: 7519753400087680208
+      Tile_0: -9163426285224168042
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
