@@ -82,6 +82,12 @@ namespace Combat
             ActiveGadgets.Flush();
         }
 
+        public void InitUnit(Unit unit, Vector2Int position, bool friendly)
+        {
+            unit.Init(position, level.CellToWorld(position), friendly);
+            ActiveUnits.Add(unit);
+        }
+        
         public Unit SpawnUnit(UnitType unitType, Vector2Int position, bool friendly)
         {
             var unit = Instantiate(unitType.Prefab);

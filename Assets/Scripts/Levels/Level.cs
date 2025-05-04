@@ -11,11 +11,12 @@ namespace Levels
     {
         public static Level Current { get; private set; }
         public Tilemap Tilemap => tilemap;
-
+        
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private Vector2Int levelSize;
         [SerializeField] private TileBase filler;
         [SerializeField] private List<Unit> enemies;
+        [SerializeField] private LevelAI levelAI;
 
         private void Awake()
         {
@@ -28,11 +29,10 @@ namespace Levels
 
             foreach (var en in enemies)
             {
-                cm.SpawnUnit(en.Type, WorldToCell(en.transform.position), false);
-                Destroy(en.gameObject);
+                cm.InitUnit(en, WorldToCell(en.transform.position), false);
             }
             
-            enemies.Clear();
+            levelAI.Init(enemies);
         }
 
         private void OnDestroy()

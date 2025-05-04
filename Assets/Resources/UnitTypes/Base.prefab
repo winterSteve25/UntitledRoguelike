@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -743641223
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -182,6 +182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilitiesParent: {fileID: 3139600034426546588}
   passivesParent: {fileID: 6353254162844262950}
+  border: {fileID: 5891881775851690275}
   <Type>k__BackingField: {fileID: 0}
 --- !u!1 &6353254162844262950
 GameObject:

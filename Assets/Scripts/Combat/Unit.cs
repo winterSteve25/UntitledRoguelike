@@ -17,6 +17,7 @@ namespace Combat
     {
         [SerializeField] private GameObject abilitiesParent;
         [SerializeField] private GameObject passivesParent;
+        [SerializeField] private SpriteRenderer border;
 
         public event Action<Unit> OnDeath;
         public event UnitHpChangeEvent OnHpChange;
@@ -47,6 +48,7 @@ namespace Combat
         {
             Abilities = abilitiesParent.GetComponents<IAbility>();
             Passives = passivesParent.GetComponents<IPassive>();
+            border.color = friendly ? Color.aquamarine : Color.crimson;
 
             _interactable = true;
             GridPosition = position;

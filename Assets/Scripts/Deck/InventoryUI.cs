@@ -44,7 +44,7 @@ namespace Deck
                 for (var i = 0; i < size.x; i++)
                 {
                     var slot = Instantiate(slotPrefab, gridLayout.transform);
-                    slot.Init(this, i, j);
+                    slot.Init(i, j);
                     _slots[i, j] = slot;
                 }
             }
@@ -57,7 +57,7 @@ namespace Deck
             var visuals = Instantiate(visualPrefab, transform.parent);
             var instance = new ItemInstanceWithVisuals(item, visuals);
 
-            visuals.Init(instance, gridLayout, _slots[item.Position.x, item.Position.y], this, canvas);
+            visuals.Init(instance, gridLayout, _slots[item.Position.x, item.Position.y], _inventory, canvas);
             _items.Add(instance);
         }
         

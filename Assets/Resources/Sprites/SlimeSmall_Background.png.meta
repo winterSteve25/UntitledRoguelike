@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6c7ed65334e970b4786a8ee76bb41de7
+guid: 1249ddeb13eabf84fbe115407adb1c59
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1143791093822766385
-    second: Queen_Background_0
+      213: 6217830047567061622
+    second: SlimeSmall_Background_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Queen_Background_0
+      name: SlimeSmall_Background_0
       rect:
         serializedVersion: 2
-        x: 37
-        y: 24
-        width: 182
-        height: 230
+        x: 25
+        y: 38
+        width: 205
+        height: 193
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 13dbf8490ff8fdf00800000000000000
-      internalID: 1143791093822766385
+      spriteID: 6722cfa1c7b2a4650800000000000000
+      internalID: 6217830047567061622
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Queen_Background_0: 1143791093822766385
+      SlimeSmall_Background_0: 6217830047567061622
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

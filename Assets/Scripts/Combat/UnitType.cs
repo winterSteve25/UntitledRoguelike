@@ -21,6 +21,8 @@ namespace Combat
         public override bool CanUse(Vector2 worldPosition)
         {
             var gridPosition = GetRelativePosition(worldPosition);
+            // restrict placement
+            if (gridPosition.y > 2) return false;
             return CombatManager.Current.CanPlaceUnitAt(this, new Vector2Int(gridPosition.x, gridPosition.y));
         }
 

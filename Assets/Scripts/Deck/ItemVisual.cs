@@ -17,7 +17,7 @@ namespace Deck
         private InventoryUI.ItemInstanceWithVisuals _thisInstance;
         private bool _followMouse;
         private Slot _slot;
-        private InventoryUI _inventoryUI;
+        private Inventory _inventory;
 
         private void Update()
         {
@@ -25,7 +25,7 @@ namespace Deck
             transform.position = _slot.transform.position;
         }
 
-        public void Init(InventoryUI.ItemInstanceWithVisuals item, GridLayoutGroup grid, Slot position, InventoryUI inventoryUI,
+        public void Init(InventoryUI.ItemInstanceWithVisuals item, GridLayoutGroup grid, Slot position, Inventory inventory,
             Canvas canvas)
         {
             followBehaviour.Init(canvas, item.ItemType.Size);
@@ -42,7 +42,7 @@ namespace Deck
             _cam = canvas.worldCamera;
             _thisInstance = item;
             _slot = position;
-            _inventoryUI = inventoryUI;
+            _inventory = inventory;
 
             transform.position = _slot.transform.position;
         }
@@ -90,10 +90,10 @@ namespace Deck
 
         private void TryPlaceIn(Vector2Int pos)
         {
-            if (_inventoryUI.CanMoveTo(_thisInstance, pos))
+            if (_inventory.CanMoveTo(_thisInstance.Instance, pos))
             {
-                _inventoryUI.RemoveItem(_slot.Pos);
-                _inventoryUI.AddItem(_thisInstance.ItemType, pos);
+                _inventory.RemoveItem(_slot.Pos);
+                _inventory.AddItem(_thisInstance.ItemType, pos);
             }
             else
             {
@@ -112,7 +112,7 @@ namespace Deck
             {
                 combatManager.PlayerEnergy -= _thisInstance.ItemType.Cost;
                 _thisInstance.ItemType.Use(pos);
-                _inventoryUI.RemoveItem(_slot.Pos);
+                _inventory.RemoveItem(_slot.Pos);
                 return;
             }
 
