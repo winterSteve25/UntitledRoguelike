@@ -6,7 +6,9 @@ using UnityEngine;
 
 namespace Combat
 {
-    public delegate void UnitHpChangeEvent(Unit unit, float original, float newHp, DamageSource source, CancelToken cancel);
+    public delegate void UnitHpChangeEvent(Unit unit, float original, float newHp, DamageSource source,
+        CancelToken cancel);
+
     public delegate void NewTurnEvent(Unit unit, bool friendlyTurn);
 
     public class CancelToken
@@ -25,14 +27,28 @@ namespace Combat
         public event NewTurnEvent OnNewTurn;
         public event Action<bool> OnInteractabilityChanged;
 
-        [field: SerializeField]
-        public UnitType Type { get; set; }
-        public Vector2Int GridPosition { get; private set; }
+        [field: SerializeField] public UnitType Type { get; set; }
+        public Vector2Int GridPositionSynchronized { get; private set; }
         public bool Friendly { get; private set; }
-        public float Hp { get; private set; }
 
         public IAbility[] Abilities { get; private set; }
         public IPassive[] Passives { get; private set; }
+
+        // ReSharper disable once FieldCanBeMadeReadOnly.Local
+        private NetworkVariable<float> _hp = new();
+        public float Hp
+        {
+            get => _hp.Value;
+            private set
+            {
+                _hp.Value = value;
+                
+                if (value <= 0)
+                {
+                    Die();
+                }
+            }
+        }
 
         private bool _interactable;
         public bool Interactable
@@ -45,13 +61,8 @@ namespace Combat
             }
         }
 
-        public void Init(Vector2Int position, bool friendly)
-        {
-            InitRpc(position, friendly);
-        }
-
         [Rpc(SendTo.ClientsAndHost)]
-        private void InitRpc(Vector2Int position, bool friendly)
+        public void InitRpc(Vector2Int position, bool friendly)
         {
             var combatManager = CombatManager.Current;
             Abilities = abilitiesParent.GetComponents<IAbility>();
@@ -59,30 +70,21 @@ namespace Combat
             border.color = combatManager.AmIFriendly == friendly ? Color.aquamarine : Color.crimson;
 
             _interactable = true;
-            GridPosition = position;
+            GridPositionSynchronized = position;
             Friendly = friendly;
-            Hp = Type.MaxHp;
             transform.position = GetWorldPosition(position);
+
+            if (IsHost)
+            {
+                Hp = Type.MaxHp;
+            }
 
             foreach (var passive in Passives)
             {
                 passive.OnSpawned(this);
             }
-            
-            combatManager.RegisterUnit(this);
         }
 
-        public void RemoveSelf()
-        {
-            RemoveSelfRpc();
-        }
-
-        [Rpc(SendTo.ClientsAndHost)]
-        private void RemoveSelfRpc()
-        {
-            CombatManager.Current.RemoveUnit(this);
-        }
-        
         public override void OnDestroy()
         {
             base.OnDestroy();
@@ -97,23 +99,25 @@ namespace Combat
             OnNewTurn?.Invoke(this, friendlyTurn);
         }
 
-        public void MoveTo(Vector2Int position)
+        [Rpc(SendTo.ClientsAndHost)]
+        public void MoveToRpc(Vector2Int position)
         {
-            GridPosition = position;
+            GridPositionSynchronized = position;
             Tween.Position(transform, GetWorldPosition(position), 0.2f);
         }
-
+        
         public void AddHp(float amount, DamageSource source)
         {
             var cancel = new CancelToken();
             OnHpChange?.Invoke(this, Hp, Hp + amount, source, cancel);
             if (cancel.Canceled) return;
-            Hp += amount;
+            ModifyHpRpc(amount);
+        }
 
-            if (Hp <= 0)
-            {
-                Die();
-            }
+        [Rpc(SendTo.Server)]
+        private void ModifyHpRpc(float amount)
+        {
+            Hp += amount;
         }
 
         private void Die()
@@ -124,11 +128,17 @@ namespace Combat
 
         private Vector2 GetWorldPosition(Vector2Int position)
         {
+            return GetWorldPosition(position, Type.Size);
+        }
+
+        public static Vector2 GetWorldPosition(Vector2Int position, Vector2Int size)
+        {
             if (!CombatManager.Current.AmIFriendly)
             {
-                return Level.Current.CellToWorld(position + new Vector2Int(1 + Mathf.FloorToInt(Type.Size.x / 2f), 1 + Mathf.FloorToInt(Type.Size.y / 2f)));
+                return Level.Current.CellToWorld(position + new Vector2Int(1 + Mathf.FloorToInt(size.x / 2f),
+                    1 + Mathf.FloorToInt(size.y / 2f)));
             }
-            
+
             return Level.Current.CellToWorld(position);
         }
     }

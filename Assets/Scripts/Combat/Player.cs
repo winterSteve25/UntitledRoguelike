@@ -1,13 +1,14 @@
 using Deck;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Combat
 {
-    public class Player
+    public class Player : NetworkBehaviour
     {
-        public readonly Inventory Inventory;
-        public readonly bool Friendly;
-        
+        public Inventory Inventory { get; private set; }
+        public bool Friendly { get; private set; }
+
         private int _energy;
         public int Energy
         {
@@ -21,11 +22,16 @@ namespace Combat
             }
         }
 
-        public Player(Vector2Int inventorySize, int energy, bool friendly)
+        public void Init(Vector2Int inventorySize, int energy, bool friendly)
         {
             Inventory = new Inventory(inventorySize);
             _energy = energy;
             Friendly = friendly;
+        }
+
+        public override string ToString()
+        {
+            return $"Player {Friendly}, Energy: {Energy}, Inventory: {Inventory}";
         }
     }
 }

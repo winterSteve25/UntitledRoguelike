@@ -20,15 +20,13 @@ public class Test : MonoBehaviour
 
     private void Update()
     {
-        if (Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            var mp = cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            var gp = Level.Current.WorldToCell(mp);
-            Debug.Log(gp);
-        }
-        
         if (!Keyboard.current.spaceKey.wasPressedThisFrame) return;
-        CombatManager.Current.NextTurn();
         Debug.Log(CombatManager.Current.Me);
+        Debug.Log(CombatManager.Current.TurnNumberSynchronized);
+
+        foreach (var u in CombatManager.Current.ActiveUnits)
+        {
+            Debug.Log($"{u} - {u.GridPositionSynchronized}");
+        }
     }
 }

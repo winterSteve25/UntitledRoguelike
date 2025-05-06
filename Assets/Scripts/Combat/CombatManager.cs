@@ -5,6 +5,7 @@ using Deck;
 using Levels;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Utils;
 
 namespace Combat
@@ -16,48 +17,54 @@ namespace Combat
         public int TurnNumberSynchronized { get; private set; } // synchronized manually via NextTurnRpc
         public bool AmIFriendly { get; private set; }
         public bool IsFriendlyTurn => TurnNumberSynchronized % 2 == 0;
-        public Player Me => AmIFriendly ? _playerFriendly : _playerUnfriendly;
+        public Player Me => AmIFriendly ? playerFriendly : playerUnfriendly;
         public bool MyTurn => AmIFriendly == IsFriendlyTurn;
+        public List<Unit> ActiveUnits => _activeUnitsSynchronized;
 
         public event Action<int, bool> OnTurnChanged;
 
-        [Header("Configurations")] 
-        [SerializeField] private int maxEnergy;
+        [Header("Configurations")] [SerializeField]
+        private int maxEnergy;
+
         [SerializeField] private Vector2Int inventorySize;
 
-        [Header("References")] 
-        [SerializeField] private Level level;
+        [Header("References")] [SerializeField]
+        private Level level;
+
         [SerializeField] private CombatInfoUI infoUI;
         [SerializeField] private SelectedUnitUI selectedUnitUI;
-        [SerializeField] private InventoryUI inventoryUI;
+        [SerializeField] private InventoryUI myInventoryUI;
+        [SerializeField] private InventoryUI opponentInventoryUI;
+        
+        [SerializeField] private Player playerFriendly;
+        [SerializeField] private Player playerUnfriendly;
 
-        private List<Unit> _activeUnitsSynchronized; // manually synchronized via RegisterUnit
-        private DeferredRemovalList<Gadget> _activeGadgets;
-        private Player _playerFriendly;
-        private Player _playerUnfriendly;
+        private List<Unit> _activeUnitsSynchronized; // manually synchronized via Rpc calls
+        private List<Gadget> _activeGadgets;
 
         private void Awake()
         {
             Current = this;
 
-            _playerFriendly = new Player(inventorySize, maxEnergy, true);
-            _playerUnfriendly = new Player(inventorySize, maxEnergy, false);
-
-            inventoryUI.Init(inventorySize, _playerFriendly.Inventory);
+            playerFriendly.Init(inventorySize, maxEnergy, true);
+            playerUnfriendly.Init(inventorySize, maxEnergy, false);
+            myInventoryUI.Init(inventorySize, playerFriendly.Inventory);
+            opponentInventoryUI.Init(inventorySize, playerUnfriendly.Inventory);
+            
             AmIFriendly = NetworkManager.Singleton.IsHost;
+
+            _activeUnitsSynchronized = new List<Unit>();
+            _activeGadgets = new List<Gadget>();
+
+            TurnNumberSynchronized = 0;
         }
 
         private void Start()
         {
-            if (!AmIFriendly)
-            {
-                var levelTransform = Level.Current.transform;
-                levelTransform.position *= -1;
-                levelTransform.rotation = Quaternion.Euler(0, 0, 180);
-            }
-
-            _activeUnitsSynchronized = new List<Unit>();
-            _activeGadgets = new DeferredRemovalList<Gadget>();
+            if (AmIFriendly) return;
+            var levelTransform = Level.Current.transform;
+            levelTransform.position *= -1;
+            levelTransform.rotation = Quaternion.Euler(0, 0, 180);
         }
 
         public override void OnDestroy()
@@ -85,12 +92,20 @@ namespace Combat
                 unit.NextTurn(IsFriendlyTurn);
             }
 
-            foreach (var gadget in _activeGadgets)
+            if (IsServer)
             {
-                gadget.NextTurn(IsFriendlyTurn);
+                for (var i = 0; i < _activeGadgets.Count; i++)
+                {
+                    var gadget = _activeGadgets[i];
+                    if (gadget.NextTurn(IsFriendlyTurn))
+                    {
+                        RemoveGadgetFromListForOthersRpc(gadget);
+                        DespawnNetworkObjectRpc(gadget.NetworkObject);
+                        _activeGadgets.RemoveAt(i);
+                        i--;
+                    }
+                }
             }
-
-            _activeGadgets.Flush();
         }
 
         public void SpawnUnit(UnitType unitType, Vector2Int position, bool friendly)
@@ -103,37 +118,48 @@ namespace Combat
                 friendly);
         }
 
-        // WARNING: THIS SHOULD ONLY BE CALLED FROM Unit.Init
-        public void RegisterUnit(Unit unit)
+        [Rpc(SendTo.Server)]
+        private void SpawnUnitRpc(string unitType, Vector2Int position, bool friendly, RpcParams rpcParams = default)
         {
-            _activeUnitsSynchronized.Add(unit);
+            var obj = NetworkManager.SpawnManager.InstantiateAndSpawn(
+                Resources.Load<NetworkObject>($"UnitTypes/{unitType}"), rpcParams.Receive.SenderClientId, true);
+            var unit = obj.GetComponent<Unit>();
+            unit.InitRpc(position, friendly);
+            AddUnitToListRpc(unit);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void AddUnitToListRpc(NetworkBehaviourReference unit)
+        {
+            if (!unit.TryGet(out Unit u, NetworkManager)) return;
+            _activeUnitsSynchronized.Add(u);
+        }
+
+        public void DespawnUnit(Unit unit)
+        {
+            RemoveUnitFromListRpc(unit);
+            DespawnNetworkObjectRpc(unit.NetworkObject);
         }
 
         [Rpc(SendTo.Server)]
-        private void SpawnUnitRpc(string unitType, Vector2Int position, bool friendly)
+        private void DespawnNetworkObjectRpc(NetworkObjectReference unit)
         {
-            var obj = NetworkManager.SpawnManager.InstantiateAndSpawn(
-                Resources.Load<NetworkObject>($"UnitTypes/{unitType}"), NetworkManager.LocalClientId, true);
-            var unit = obj.GetComponent<Unit>();
-            unit.Init(position, friendly);
-        }
-        
-        public void DespawnUnit(Unit unit)
-        {
-            unit.RemoveSelf();
+            if (!unit.TryGet(out var obj, NetworkManager)) return;
+            obj.Despawn();
         }
 
-        // WARNING: THIS SHOULD ONLY BE CALLED FROM Unit.RemoveSelf
-        public void RemoveUnit(Unit unit)
+        [Rpc(SendTo.ClientsAndHost)]
+        private void RemoveUnitFromListRpc(NetworkBehaviourReference unit)
         {
-            _activeUnitsSynchronized.Remove(unit);
+            if (!unit.TryGet(out Unit u, NetworkManager)) return;
+            _activeUnitsSynchronized.Remove(u);
         }
-        
+
         public Unit GetUnit(int x, int y)
         {
             return _activeUnitsSynchronized.FirstOrDefault(u =>
-                u.GridPosition.x <= x && u.GridPosition.y <= y &&
-                x < u.GridPosition.x + u.Type.Size.x && y < u.GridPosition.y + u.Type.Size.y);
+                u.GridPositionSynchronized.x <= x && u.GridPositionSynchronized.y <= y &&
+                x < u.GridPositionSynchronized.x + u.Type.Size.x && y < u.GridPositionSynchronized.y + u.Type.Size.y);
         }
 
         public bool CanPlaceUnitAt(UnitType unitType, Vector2Int position)
@@ -141,7 +167,7 @@ namespace Combat
             return level.InBounds(position, unitType.Size, !AmIFriendly) &&
                    _activeUnitsSynchronized.TrueForAll(u =>
                        !RectangleTester.AreRectanglesOverlapping(
-                           u.GridPosition.x, u.GridPosition.y,
+                           u.GridPositionSynchronized.x, u.GridPositionSynchronized.y,
                            u.Type.Size.x, u.Type.Size.y,
                            position.x, position.y,
                            unitType.Size.x, unitType.Size.y));
@@ -154,7 +180,8 @@ namespace Combat
             foreach (var u in _activeUnitsSynchronized)
             {
                 var overlap = RectangleTester.AreRectanglesOverlapping(position.x, position.y, unit.Type.Size.x,
-                    unit.Type.Size.y, u.GridPosition.x, u.GridPosition.y, u.Type.Size.x, u.Type.Size.y);
+                    unit.Type.Size.y, u.GridPositionSynchronized.x, u.GridPositionSynchronized.y, u.Type.Size.x,
+                    u.Type.Size.y);
 
                 if (!overlap) continue;
                 if (ReferenceEquals(unit, u)) continue;
@@ -171,17 +198,34 @@ namespace Combat
             return unit != null;
         }
 
-        public Gadget SpawnGadget(Gadget prefab)
+        public void SpawnGadget(Gadget prefab, Vector2Int position)
         {
-            var gadget = Instantiate(prefab);
-            _activeGadgets.Add(gadget);
-            return gadget;
+            SpawnGadgetRpc(prefab.name, position);
         }
 
-        public void RemoveGadget(Gadget gadget)
+        [Rpc(SendTo.Server)]
+        private void SpawnGadgetRpc(string gadgetPrefabName, Vector2Int position, RpcParams rpcParams = default)
         {
-            _activeGadgets.Remove(gadget);
-            Destroy(gadget.gameObject);
+            var obj = NetworkManager.SpawnManager.InstantiateAndSpawn(
+                Resources.Load<NetworkObject>($"Gadgets/{gadgetPrefabName}"), rpcParams.Receive.SenderClientId, true);
+
+            var gadget = obj.GetComponent<Gadget>();
+            gadget.InitRpc(position);
+            AddGadgetToListRpc(gadget);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void AddGadgetToListRpc(NetworkBehaviourReference gadget)
+        {
+            if (!gadget.TryGet(out Gadget g, NetworkManager)) return;
+            _activeGadgets.Add(g);
+        }
+
+        [Rpc(SendTo.NotMe)]
+        private void RemoveGadgetFromListForOthersRpc(NetworkBehaviourReference unit)
+        {
+            if (!unit.TryGet(out Gadget g, NetworkManager)) return;
+            _activeGadgets.Remove(g);
         }
     }
 }

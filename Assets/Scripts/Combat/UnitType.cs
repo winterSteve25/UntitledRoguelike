@@ -29,7 +29,7 @@ namespace Combat
             // restrict placement
             if (CombatManager.Current.AmIFriendly)
             {
-                if (gridPosition.y > 2) return false;
+                if (gridPosition.y > 1) return false;
             }
             else
             {
@@ -49,7 +49,6 @@ namespace Combat
         private Vector2Int GetRelativePosition(Vector2 worldPosition)
         {
             var gridPosition = Level.Current.Tilemap.WorldToCell(worldPosition);
-            Debug.Log(gridPosition);
             return new Vector2Int(gridPosition.x, gridPosition.y);
         }
     }

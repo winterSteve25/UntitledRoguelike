@@ -16,7 +16,7 @@ namespace Content.General
         
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
-            var pos = await areaSelector.SelectArea(unit.GridPosition, unit.Type.Size, attackRadius,
+            var pos = await areaSelector.SelectArea(unit.GridPositionSynchronized, unit.Type.Size, attackRadius,
                  p => combatManager.TryGetUnit(p.x, p.y, out _), mode);
             if (pos == null) return false;
             
