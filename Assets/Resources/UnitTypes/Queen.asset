@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2444409799b9441aa94b29bc0c1e8b3b, type: 3}
   m_Name: Queen
   m_EditorClassIdentifier: 
-  <Prefab>k__BackingField: {fileID: 866934823247284874, guid: 3f2a54338c45c644890917a9d9d4431c, type: 3}
+  <Prefab>k__BackingField: {fileID: 9167722102969840024, guid: 3f2a54338c45c644890917a9d9d4431c, type: 3}
   <Name>k__BackingField: Queen
   <MaxHp>k__BackingField: 1
   size: {x: 1, y: 2}
   cost: 2
-  useCustomOffset: 0
-  placementOffset: {x: 0, y: 0}

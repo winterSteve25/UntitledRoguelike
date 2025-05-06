@@ -12,9 +12,9 @@ namespace Combat
 
         public static bool IsValid(Vector2Int center, Vector2Int centerSize, Vector2Int target, int radius, SpotSelectionMode mode)
         {
-            if (RectangleTester.InBound(centerSize, center, target.x, target.y, false)) return false;
+            if (RectangleTester.InBound(centerSize, center, target.x, target.y, false, !CombatManager.Current.AmIFriendly)) return false;
             if (!RectangleTester.InBound(new Vector2Int(radius, radius) * 2 + centerSize,
-                    center - new Vector2Int(radius, radius), target.x, target.y, false)) return false;
+                    center - new Vector2Int(radius, radius), target.x, target.y, false, !CombatManager.Current.AmIFriendly)) return false;
 
             if (mode == SpotSelectionMode.Straight)
             {

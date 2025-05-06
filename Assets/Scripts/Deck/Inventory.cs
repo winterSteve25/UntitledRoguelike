@@ -45,7 +45,7 @@ namespace Deck
         {
             for (int i = 0; i < _items.Count; i++)
             {
-                if (!RectangleTester.InBound(_items[i].ItemType.Size, _items[i].Position, position.x, position.y, false))
+                if (!RectangleTester.InBound(_items[i].ItemType.Size, _items[i].Position, position.x, position.y, false, false))
                     continue;
                 OnItemRemoved?.Invoke(i);
                 _items.RemoveAt(i);
@@ -56,7 +56,7 @@ namespace Deck
         public bool CanPlaceAt(ItemType itemType, Vector2Int position)
         {
             var inBound = RectangleTester.InBound(_size, Vector2Int.zero, position.x, position.y, itemType.Size.x,
-                itemType.Size.y, true);
+                itemType.Size.y, true, false);
             
             return inBound && !_items.Any(x => RectangleTester.AreRectanglesOverlapping(
                        x.Position.x, x.Position.y, x.ItemType.Size.x, x.ItemType.Size.y,
@@ -66,7 +66,7 @@ namespace Deck
         public ItemInstance GetItem(Vector2Int position)
         {
             return _items.FirstOrDefault(t =>
-                RectangleTester.InBound(t.ItemType.Size, t.Position, position.x, position.y, false));
+                RectangleTester.InBound(t.ItemType.Size, t.Position, position.x, position.y, false, false));
         }
 
         public bool CanMoveTo(ItemInstance item, Vector2Int position)
@@ -88,14 +88,6 @@ namespace Deck
             }
 
             return true;
-        }
-
-        public void DebugPrint()
-        {
-            foreach (var i in _items)
-            {
-                Debug.Log($"{i.Position} - {i.ItemType}");
-            }
         }
 
         public class ItemInstance

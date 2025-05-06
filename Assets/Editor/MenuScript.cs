@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Combat;
+using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,10 +25,10 @@ namespace Editor
             AssetDatabase.Refresh();
 
             var loadedUnitType = AssetDatabase.LoadAssetAtPath<UnitType>(unitTypePath);
-            var loadedPrefab = AssetDatabase.LoadAssetAtPath<Unit>(prefabPath);
+            var loadedPrefab = AssetDatabase.LoadAssetAtPath<NetworkObject>(prefabPath);
 
             loadedUnitType.Prefab = loadedPrefab;
-            loadedPrefab.Type = loadedUnitType;
+            loadedPrefab.GetComponent<Unit>().Type = loadedUnitType;
 
             EditorUtility.SetDirty(loadedUnitType);
             EditorUtility.SetDirty(loadedPrefab);

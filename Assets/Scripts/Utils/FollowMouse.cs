@@ -1,4 +1,5 @@
 using System;
+using Combat;
 using Levels;
 using PrimeTween;
 using UnityEngine;
@@ -53,7 +54,7 @@ namespace Utils
                 }
 
                 mousePosition = _parentCanvas.worldCamera.WorldToScreenPoint(GetMousePositionOnGrid(gp));
-                _rectTransform.pivot = new Vector2(0f, 0);
+                _rectTransform.pivot = Vector2.zero;
                 _wasOnGrid = true;
             }
             else if (_wasOnGrid)
@@ -108,12 +109,19 @@ namespace Utils
 
         private bool CanSnapToGrid(Vector2Int gp)
         {
-            return Level.Current.InBounds(gp, _size);
+            return Level.Current.InBounds(gp, _size, !CombatManager.Current.AmIFriendly);
         }
 
         private Vector2 GetMousePositionOnGrid(Vector2Int gp)
         {
             var wp = Level.Current.CellToWorld(gp);
+
+            // b/c board flip
+            if (!CombatManager.Current.AmIFriendly)
+            {
+                wp -= Level.Current.Tilemap.cellSize;
+            }
+
             wp.z = 0;
             return wp;
         }

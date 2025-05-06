@@ -84,7 +84,7 @@ namespace Deck
                 TryPlaceIn(slot.Pos);
                 return;
             }
-
+            
             TryUseOrCancel();
         }
 
@@ -106,11 +106,11 @@ namespace Deck
             var pos = _cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var combatManager = CombatManager.Current;
             
-            if (combatManager.PlayerEnergy >= _thisInstance.ItemType.Cost &&
-                combatManager.FriendlyTurn &&
+            if (combatManager.Me.Energy >= _thisInstance.ItemType.Cost &&
+                combatManager.MyTurn &&
                 _thisInstance.ItemType.CanUse(pos))
             {
-                combatManager.PlayerEnergy -= _thisInstance.ItemType.Cost;
+                combatManager.Me.Energy -= _thisInstance.ItemType.Cost;
                 _thisInstance.ItemType.Use(pos);
                 _inventory.RemoveItem(_slot.Pos);
                 return;

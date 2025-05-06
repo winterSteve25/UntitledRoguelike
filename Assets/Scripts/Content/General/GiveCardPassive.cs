@@ -21,17 +21,14 @@ namespace Content.General
 
         private void UnitOnOnNewTurn(Unit unit, bool friendlyturn)
         {
-            if (atStart && (!friendlyturn && friendlyOnly)) return;
-            if (!atStart && (friendlyturn || !friendlyOnly)) return;
+            if (atStart && (friendlyturn != CombatManager.Current.AmIFriendly && friendlyOnly)) return;
+            if (!atStart && (friendlyturn == CombatManager.Current.AmIFriendly || !friendlyOnly)) return;
 
             _counter++;
             if (_counter != turnCount) return;
 
             _counter = 0;
-            var inventory = unit.Friendly
-                ? CombatManager.Current.PlayerInventory
-                : EnemyManager.Current.Inventory;
-
+            var inventory = CombatManager.Current.Me.Inventory;
             inventory.AddAnywhere(itemType);
         }
     }

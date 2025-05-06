@@ -17,7 +17,7 @@ namespace Content.WhirlPool
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
             var area = await areaSelector.SelectArea(unit.GridPosition, unit.Type.Size, spawnRadius,
-                p => Level.Current.InBounds(p, WhirlPoolGadget.Size));
+                p => Level.Current.InBounds(p, WhirlPoolGadget.Size, !combatManager.AmIFriendly));
 
             if (area == null) return false;
             var gadget = combatManager.SpawnGadget(prefab);

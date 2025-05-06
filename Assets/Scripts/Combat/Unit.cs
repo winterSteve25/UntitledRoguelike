@@ -1,6 +1,7 @@
 using System;
 using Levels;
 using PrimeTween;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Combat
@@ -13,7 +14,7 @@ namespace Combat
         public bool Canceled = false;
     }
 
-    public class Unit : MonoBehaviour
+    public class Unit : NetworkBehaviour
     {
         [SerializeField] private GameObject abilitiesParent;
         [SerializeField] private GameObject passivesParent;
@@ -44,27 +45,47 @@ namespace Combat
             }
         }
 
-        public void Init(Vector2Int position, Vector2 worldPosition, bool friendly)
+        public void Init(Vector2Int position, bool friendly)
         {
+            InitRpc(position, friendly);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void InitRpc(Vector2Int position, bool friendly)
+        {
+            var combatManager = CombatManager.Current;
             Abilities = abilitiesParent.GetComponents<IAbility>();
             Passives = passivesParent.GetComponents<IPassive>();
-            border.color = friendly ? Color.aquamarine : Color.crimson;
+            border.color = combatManager.AmIFriendly == friendly ? Color.aquamarine : Color.crimson;
 
             _interactable = true;
             GridPosition = position;
             Friendly = friendly;
             Hp = Type.MaxHp;
-
-            transform.position = worldPosition;
+            transform.position = GetWorldPosition(position);
 
             foreach (var passive in Passives)
             {
                 passive.OnSpawned(this);
             }
+            
+            combatManager.RegisterUnit(this);
         }
 
-        private void OnDestroy()
+        public void RemoveSelf()
         {
+            RemoveSelfRpc();
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void RemoveSelfRpc()
+        {
+            CombatManager.Current.RemoveUnit(this);
+        }
+        
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
             OnDeath = null;
             OnNewTurn = null;
             OnHpChange = null;
@@ -79,7 +100,7 @@ namespace Combat
         public void MoveTo(Vector2Int position)
         {
             GridPosition = position;
-            Tween.Position(transform, Level.Current.CellToWorld(position), 0.2f);
+            Tween.Position(transform, GetWorldPosition(position), 0.2f);
         }
 
         public void AddHp(float amount, DamageSource source)
@@ -98,7 +119,17 @@ namespace Combat
         private void Die()
         {
             OnDeath?.Invoke(this);
-            CombatManager.Current.RemoveUnit(this);
+            CombatManager.Current.DespawnUnit(this);
+        }
+
+        private Vector2 GetWorldPosition(Vector2Int position)
+        {
+            if (!CombatManager.Current.AmIFriendly)
+            {
+                return Level.Current.CellToWorld(position + new Vector2Int(1 + Mathf.FloorToInt(Type.Size.x / 2f), 1 + Mathf.FloorToInt(Type.Size.y / 2f)));
+            }
+            
+            return Level.Current.CellToWorld(position);
         }
     }
 }

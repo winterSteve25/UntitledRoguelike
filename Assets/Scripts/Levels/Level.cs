@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Combat;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Utils;
@@ -15,24 +12,10 @@ namespace Levels
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private Vector2Int levelSize;
         [SerializeField] private TileBase filler;
-        [SerializeField] private List<Unit> enemies;
-        [SerializeField] private LevelAI levelAI;
 
         private void Awake()
         {
             Current = this;
-        }
-
-        private void Start()
-        {
-            var cm = CombatManager.Current;
-
-            foreach (var en in enemies)
-            {
-                cm.InitUnit(en, WorldToCell(en.transform.position), false);
-            }
-            
-            levelAI.Init(enemies);
         }
 
         private void OnDestroy()
@@ -64,9 +47,9 @@ namespace Levels
             return new Vector2Int(gp.x, gp.y);
         }
 
-        public bool InBounds(Vector2Int point, Vector2Int size)
+        public bool InBounds(Vector2Int point, Vector2Int size, bool upsideDown)
         {
-            return RectangleTester.InBound(levelSize, Vector2Int.zero, point.x, point.y, size.x, size.y, true);
+            return RectangleTester.InBound(levelSize, Vector2Int.zero, point.x, point.y, size.x, size.y, true, upsideDown);
         }
     }
 }

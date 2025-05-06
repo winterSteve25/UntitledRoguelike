@@ -26,9 +26,9 @@ namespace Combat
             CombatManager.Current.NextTurn();
         }
         
-        public void IsNextTurn(int turnNumber, bool friendlyTurn)
+        public void IsNextTurn(int turnNumber, bool friendly)
         {
-            if (friendlyTurn)
+            if (friendly == CombatManager.Current.AmIFriendly)
             {
                 turnText.text = "Your Turn";
                 energyText.gameObject.SetActive(true);

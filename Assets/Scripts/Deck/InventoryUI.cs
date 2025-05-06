@@ -10,7 +10,6 @@ namespace Deck
     {
         [SerializeField] private GridLayoutGroup gridLayout;
         [SerializeField] private Canvas canvas;
-        [SerializeField] private Vector2Int size;
         [SerializeField] private Slot slotPrefab;
         [SerializeField] private ItemVisual visualPrefab;
 
@@ -22,9 +21,9 @@ namespace Deck
         public Inventory Inventory => _inventory;
         public Slot this[int i, int j] => _slots[i, j];
 
-        private void Awake()
+        public void Init(Vector2Int size, Inventory inventory)
         {
-            _inventory = new Inventory(size);
+            _inventory = inventory;
             _inventory.OnItemAdded += AddItem;
             _inventory.OnItemRemoved += RemoveItem;
             _items = new List<ItemInstanceWithVisuals>();

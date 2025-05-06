@@ -107,28 +107,24 @@ namespace Combat
                 // TODO: Use pools
                 var btn = Instantiate(abilityBtnPrefab, btnsGroup);
                 btn.interactable = unit.Interactable
-                                   && CombatManager.Current.FriendlyTurn == unit.Friendly
-                                   && CombatManager.Current.PlayerEnergy >= ability.Cost;
+                                   && combatManager.AmIFriendly == unit.Friendly
+                                   && combatManager.Me.Energy >= ability.Cost
+                                   && combatManager.MyTurn;
                 btn.GetComponentInChildren<TMP_Text>().text = $"{ability.Name} ({ability.Cost})";
                 btn.onClick.AddListener(() =>
                 {
-                    if (combatManager.PlayerEnergy < ability.Cost || !combatManager.FriendlyTurn)
-                    {
-                        return;
-                    }
-
                     if (ability.Blocking)
                     {
                         UniTask.Void(async () =>
                         {
                             var successful = await ability.Perform(combatManager, unit, areaSelector);
                             if (!successful) return;
-                            combatManager.PlayerEnergy -= ability.Cost;
+                            combatManager.Me.Energy -= ability.Cost;
                         });
                     }
                     else
                     {
-                        combatManager.PlayerEnergy -= ability.Cost;
+                        combatManager.Me.Energy -= ability.Cost;
                         ability.Perform(combatManager, unit, areaSelector)
                             .Forget();
                     }
@@ -169,7 +165,7 @@ namespace Combat
         {
             foreach (var btn in _abilityBtns)
             {
-                btn.Item1.interactable = interactable && CombatManager.Current.FriendlyTurn == _showing.Friendly;
+                btn.Item1.interactable = interactable && CombatManager.Current.AmIFriendly == _showing.Friendly && CombatManager.Current.MyTurn;
             }
         }
 
@@ -189,8 +185,9 @@ namespace Combat
             {
                 btn.Item1.interactable =
                     btn.Item1.interactable
-                    && CombatManager.Current.FriendlyTurn == _showing.Friendly
-                    && btn.Item2 <= playerEnergy;
+                    && CombatManager.Current.AmIFriendly == _showing.Friendly
+                    && btn.Item2 <= playerEnergy
+                    && CombatManager.Current.MyTurn;
             }
         }
     }

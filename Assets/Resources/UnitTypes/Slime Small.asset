@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2444409799b9441aa94b29bc0c1e8b3b, type: 3}
   m_Name: Slime Small
   m_EditorClassIdentifier: 
-  <Prefab>k__BackingField: {fileID: 866934823247284874, guid: fcbfb3377af96584fb6e28d6b20840b7, type: 3}
+  <Prefab>k__BackingField: {fileID: 8504758828728001372, guid: fcbfb3377af96584fb6e28d6b20840b7, type: 3}
   <Name>k__BackingField: Slime (Small)
   <MaxHp>k__BackingField: 1
   size: {x: 1, y: 1}
