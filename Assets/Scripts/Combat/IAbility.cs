@@ -22,13 +22,13 @@ namespace Combat
         
         protected static async UniTask UntilNextTurn(CombatManager combatManager)
         {
-            await UniTask.WaitUntil(combatManager.TurnNumberSynchronized, n => n != combatManager.TurnNumberSynchronized);
+            await UniTask.WaitUntil(combatManager.TurnNumberSync, n => n != combatManager.TurnNumberSync);
         }
 
         protected static async UniTask UntilNextFriendlyTurn(CombatManager combatManager)
         {
             var wasFriendlyTurn = combatManager.IsFriendlyTurn;
-            await UniTask.WaitUntil(combatManager.TurnNumberSynchronized, n => n != combatManager.TurnNumberSynchronized && combatManager.IsFriendlyTurn == wasFriendlyTurn);
+            await UniTask.WaitUntil(combatManager.TurnNumberSync, n => n != combatManager.TurnNumberSync && combatManager.IsFriendlyTurn == wasFriendlyTurn);
         }
     }
 }

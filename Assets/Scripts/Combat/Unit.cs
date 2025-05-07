@@ -28,7 +28,7 @@ namespace Combat
         public event Action<bool> OnInteractabilityChanged;
 
         [field: SerializeField] public UnitType Type { get; set; }
-        public Vector2Int GridPositionSynchronized { get; private set; }
+        public Vector2Int GridPositionSync { get; private set; }
         public bool Friendly { get; private set; }
 
         public IAbility[] Abilities { get; private set; }
@@ -57,7 +57,7 @@ namespace Combat
             set
             {
                 _interactable = value;
-                OnInteractabilityChanged?.Invoke(value);
+                TriggerInteractabilityChangedEventRpc(value);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Combat
             border.color = combatManager.AmIFriendly == friendly ? Color.aquamarine : Color.crimson;
 
             _interactable = true;
-            GridPositionSynchronized = position;
+            GridPositionSync = position;
             Friendly = friendly;
             transform.position = GetWorldPosition(position);
 
@@ -102,30 +102,25 @@ namespace Combat
         [Rpc(SendTo.ClientsAndHost)]
         public void MoveToRpc(Vector2Int position)
         {
-            GridPositionSynchronized = position;
+            GridPositionSync = position;
             Tween.Position(transform, GetWorldPosition(position), 0.2f);
         }
-        
-        public void AddHp(float amount, DamageSource source)
+
+        [Rpc(SendTo.Server)]
+        public void AddHpRpc(float amount, DamageSource source)
         {
             var cancel = new CancelToken();
             OnHpChange?.Invoke(this, Hp, Hp + amount, source, cancel);
             if (cancel.Canceled) return;
-            ModifyHpRpc(amount);
-        }
-
-        [Rpc(SendTo.Server)]
-        private void ModifyHpRpc(float amount)
-        {
             Hp += amount;
         }
 
         private void Die()
         {
-            OnDeath?.Invoke(this);
+            TriggerDeathEventRpc();
             CombatManager.Current.DespawnUnit(this);
         }
-
+        
         private Vector2 GetWorldPosition(Vector2Int position)
         {
             return GetWorldPosition(position, Type.Size);
@@ -140,6 +135,18 @@ namespace Combat
             }
 
             return Level.Current.CellToWorld(position);
+        }
+        
+        [Rpc(SendTo.Server)]
+        private void TriggerDeathEventRpc()
+        {
+            OnDeath?.Invoke(this);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void TriggerInteractabilityChangedEventRpc(bool value)
+        {
+            OnInteractabilityChanged?.Invoke(value);
         }
     }
 }

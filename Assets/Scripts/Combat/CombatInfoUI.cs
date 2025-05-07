@@ -23,7 +23,7 @@ namespace Combat
 
         public void NextTurn()
         {
-            CombatManager.Current.NextTurn();
+            CombatManager.Current.NextTurnRpc();
         }
         
         public void IsNextTurn(int turnNumber, bool friendly)

@@ -1,22 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using Utils;
 
 namespace Deck
 {
-    public class Inventory
+    public class Inventory : NetworkBehaviour
     {
-        private readonly List<ItemInstance> _items = new();
-        private readonly Vector2Int _size;
-
         public event Action<ItemInstance> OnItemAdded;
         public event Action<int> OnItemRemoved;
 
-        public Inventory(Vector2Int size)
+        // synchronized manually via rpc calls
+        private List<ItemInstance> _itemsSync;
+        private Vector2Int _size;
+
+        public void Init(Vector2Int inventorySize)
         {
-            _size = size;
+            _itemsSync = new List<ItemInstance>();
+            _size = inventorySize;
         }
 
         public void AddAnywhere(ItemType itemType)
@@ -35,37 +38,64 @@ namespace Deck
 
         public void AddItem(ItemType itemType, Vector2Int position, bool skipChecks = false)
         {
-            if (!skipChecks && !CanPlaceAt(itemType, position)) return;
-            var instance = new ItemInstance(itemType, position);
+            AddItemRpc(itemType.name, itemType.Category, position, skipChecks);
+        }
+
+        [Rpc(SendTo.Server)]
+        private void AddItemRpc(string itemType, Category category, Vector2Int position, bool skipChecks)
+        {
+            var it = category.GetItemType(itemType);
+            if (!skipChecks && !CanPlaceAt(it, position)) return;
+            AddItemToListRpc(itemType, category, position);
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void AddItemToListRpc(string itemType, Category category, Vector2Int position)
+        {
+            var it = category.GetItemType(itemType);
+            var instance = new ItemInstance(it, position);
             OnItemAdded?.Invoke(instance);
-            _items.Add(instance);
+            _itemsSync.Add(instance);
         }
 
         public void RemoveItem(Vector2Int position)
         {
-            for (int i = 0; i < _items.Count; i++)
+            RemoveItemRpc(position);
+        }
+
+        [Rpc(SendTo.Server)]
+        private void RemoveItemRpc(Vector2Int position)
+        {
+            for (var i = 0; i < _itemsSync.Count; i++)
             {
-                if (!RectangleTester.InBound(_items[i].ItemType.Size, _items[i].Position, position.x, position.y, false, false))
+                if (!RectangleTester.InBound(_itemsSync[i].ItemType.Size, _itemsSync[i].Position, position.x,
+                        position.y, false, false))
                     continue;
-                OnItemRemoved?.Invoke(i);
-                _items.RemoveAt(i);
+                RemoveItemFromListRpc(i);
                 break;
             }
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void RemoveItemFromListRpc(int i)
+        {
+            OnItemRemoved?.Invoke(i);
+            _itemsSync.RemoveAt(i);
         }
 
         public bool CanPlaceAt(ItemType itemType, Vector2Int position)
         {
             var inBound = RectangleTester.InBound(_size, Vector2Int.zero, position.x, position.y, itemType.Size.x,
                 itemType.Size.y, true, false);
-            
-            return inBound && !_items.Any(x => RectangleTester.AreRectanglesOverlapping(
-                       x.Position.x, x.Position.y, x.ItemType.Size.x, x.ItemType.Size.y,
-                       position.x, position.y, itemType.Size.x, itemType.Size.y));
+
+            return inBound && !_itemsSync.Any(x => RectangleTester.AreRectanglesOverlapping(
+                x.Position.x, x.Position.y, x.ItemType.Size.x, x.ItemType.Size.y,
+                position.x, position.y, itemType.Size.x, itemType.Size.y));
         }
 
         public ItemInstance GetItem(Vector2Int position)
         {
-            return _items.FirstOrDefault(t =>
+            return _itemsSync.FirstOrDefault(t =>
                 RectangleTester.InBound(t.ItemType.Size, t.Position, position.x, position.y, false, false));
         }
 
@@ -75,7 +105,7 @@ namespace Deck
                 position.y + item.ItemType.Size.y > _size.y)
                 return false;
 
-            foreach (var i in _items)
+            foreach (var i in _itemsSync)
             {
                 var overlap = RectangleTester.AreRectanglesOverlapping(position.x, position.y, item.ItemType.Size.x,
                     item.ItemType.Size.y,

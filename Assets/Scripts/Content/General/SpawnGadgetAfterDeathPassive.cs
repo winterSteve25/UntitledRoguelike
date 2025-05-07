@@ -14,7 +14,7 @@ namespace Content.General
         
         private void UnitOnOnDeath(Unit unit)
         {
-            CombatManager.Current.SpawnGadget(prefab, unit.GridPositionSynchronized);
+            CombatManager.Current.SpawnGadget(prefab, unit.GridPositionSync);
         }
     }
 }

@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Combat
 {
-    public class Player : NetworkBehaviour
+    public class Player : MonoBehaviour
     {
+        [field: SerializeField]
         public Inventory Inventory { get; private set; }
-        public bool Friendly { get; private set; }
 
         private int _energy;
         public int Energy
@@ -22,16 +22,15 @@ namespace Combat
             }
         }
 
-        public void Init(Vector2Int inventorySize, int energy, bool friendly)
+        public void Init(Vector2Int inventorySize, int energy)
         {
-            Inventory = new Inventory(inventorySize);
-            _energy = energy;
-            Friendly = friendly;
+            Inventory.Init(inventorySize);
+            Energy = energy;
         }
 
         public override string ToString()
         {
-            return $"Player {Friendly}, Energy: {Energy}, Inventory: {Inventory}";
+            return $"Energy: {Energy}, Inventory: {Inventory}";
         }
     }
 }

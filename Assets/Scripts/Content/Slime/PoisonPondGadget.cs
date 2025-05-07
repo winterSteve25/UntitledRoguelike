@@ -13,7 +13,7 @@ namespace Content.Slime
         {
             var cm = CombatManager.Current;
             if (!cm.TryGetUnit(GridPosition.x, GridPosition.y, out var unit)) return;
-            unit.AddHp(-damage, DamageSource.Poison);
+            unit.AddHpRpc(-damage, DamageSource.Poison);
         }
     }
 }

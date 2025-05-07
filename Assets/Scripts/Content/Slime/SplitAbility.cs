@@ -19,13 +19,13 @@ namespace Content.Slime
             combatManager.DespawnUnit(unit);
 
             combatManager.SpawnUnit(
-                smallSlime, new Vector2Int(unit.GridPositionSynchronized.x, unit.GridPositionSynchronized.y), unit.Friendly);
+                smallSlime, new Vector2Int(unit.GridPositionSync.x, unit.GridPositionSync.y), unit.Friendly);
             combatManager.SpawnUnit(
-                smallSlime, new Vector2Int(unit.GridPositionSynchronized.x + 1, unit.GridPositionSynchronized.y), unit.Friendly);
+                smallSlime, new Vector2Int(unit.GridPositionSync.x + 1, unit.GridPositionSync.y), unit.Friendly);
             combatManager.SpawnUnit(
-                smallSlime, new Vector2Int(unit.GridPositionSynchronized.x, unit.GridPositionSynchronized.y + 1), unit.Friendly);
+                smallSlime, new Vector2Int(unit.GridPositionSync.x, unit.GridPositionSync.y + 1), unit.Friendly);
             combatManager.SpawnUnit(
-                smallSlime, new Vector2Int(unit.GridPositionSynchronized.x + 1, unit.GridPositionSynchronized.y + 1), unit.Friendly);
+                smallSlime, new Vector2Int(unit.GridPositionSync.x + 1, unit.GridPositionSync.y + 1), unit.Friendly);
 
             return true;
         }

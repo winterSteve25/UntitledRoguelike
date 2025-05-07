@@ -15,7 +15,7 @@ namespace Content.General
 
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
-            var area = await areaSelector.SelectArea(unit.GridPositionSynchronized, unit.Type.Size, MovementRadius,
+            var area = await areaSelector.SelectArea(unit.GridPositionSync, unit.Type.Size, MovementRadius,
                 p => combatManager.CanMoveTo(unit, p), MovementMode);
             if (area == null) return false;
             

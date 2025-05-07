@@ -41,7 +41,10 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Entities
+  - name: Gadgets
+    uniqueID: 3289609715
+    locked: 0
+  - name: Units
     uniqueID: 3551326073
     locked: 0
   - name: UI

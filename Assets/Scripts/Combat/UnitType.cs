@@ -19,6 +19,7 @@ namespace Combat
 
         public override Vector2Int Size => size;
         public override int Cost => cost;
+        public override Category Category => Category.Unit;
         public override Sprite Sprite => Prefab.GetComponentInChildren<SpriteRenderer>().sprite;
 
         public override bool CanUse(Vector2 worldPosition)

@@ -16,12 +16,12 @@ namespace Content.General
         
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
-            var pos = await areaSelector.SelectArea(unit.GridPositionSynchronized, unit.Type.Size, attackRadius,
+            var pos = await areaSelector.SelectArea(unit.GridPositionSync, unit.Type.Size, attackRadius,
                  p => combatManager.TryGetUnit(p.x, p.y, out _), mode);
             if (pos == null) return false;
             
             var u = combatManager.GetUnit(pos.Value.x, pos.Value.y);
-            u.AddHp(-damage, DamageSource.Bludgeoning);
+            u.AddHpRpc(-damage, DamageSource.Bludgeoning);
             return true;
         }
     }

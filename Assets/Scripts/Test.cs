@@ -15,18 +15,17 @@ public class Test : MonoBehaviour
     {
         inventoryUI.AddItem(a, new Vector2Int(0, 0));
         inventoryUI.AddItem(b, new Vector2Int(2, 0));
-        CombatManager.Current.NextTurn();
     }
 
     private void Update()
     {
         if (!Keyboard.current.spaceKey.wasPressedThisFrame) return;
         Debug.Log(CombatManager.Current.Me);
-        Debug.Log(CombatManager.Current.TurnNumberSynchronized);
+        Debug.Log(CombatManager.Current.TurnNumberSync);
 
         foreach (var u in CombatManager.Current.ActiveUnits)
         {
-            Debug.Log($"{u} - {u.GridPositionSynchronized}");
+            Debug.Log($"{u} - {u.GridPositionSync}");
         }
     }
 }
