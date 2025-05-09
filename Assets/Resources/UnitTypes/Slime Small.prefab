@@ -151,7 +151,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -743641223
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 1249ddeb13eabf84fbe115407adb1c59, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -237,8 +237,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a16a2fd96ee4408d9dbc24eef9b912c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   abilitiesParent: {fileID: 3139600034426546588}
   passivesParent: {fileID: 6353254162844262950}
+  visual: {fileID: 293870502170231169}
   border: {fileID: 4690402326182531035}
   <Type>k__BackingField: {fileID: 11400000, guid: bd8945150c1a8e54f89884d01d9b7a4f, type: 2}
 --- !u!1 &6300138470615135229
@@ -316,7 +318,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -743641223
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 8a302cdf3e4776544b072c659f14d843, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

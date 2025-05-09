@@ -20,6 +20,7 @@ namespace Combat
     {
         [SerializeField] private GameObject abilitiesParent;
         [SerializeField] private GameObject passivesParent;
+        [SerializeField] private SpriteRenderer visual;
         [SerializeField] private SpriteRenderer border;
 
         public event Action<Unit> OnDeath;

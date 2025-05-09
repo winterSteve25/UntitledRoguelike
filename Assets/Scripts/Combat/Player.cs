@@ -1,3 +1,4 @@
+using Combat.UI;
 using Deck;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,6 +10,10 @@ namespace Combat
         [field: SerializeField]
         public Inventory Inventory { get; private set; }
 
+        [SerializeField] private CombatInfoUI infoUI;
+        [SerializeField] private SelectedUnitUI selectedUnitUI;
+
+        // not synchronized
         private int _energy;
         public int Energy
         {
@@ -16,9 +21,8 @@ namespace Combat
             set
             {
                 _energy = value;
-                // TODO
-                // infoUI.UpdateEnergy(_energy, maxEnergy);
-                // selectedUnitUI.UpdateEnergy(_energy);
+                infoUI.UpdateEnergy(_energy);
+                selectedUnitUI.UpdateEnergy(_energy);
             }
         }
 

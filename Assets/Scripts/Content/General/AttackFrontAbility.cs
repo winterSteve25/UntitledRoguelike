@@ -9,6 +9,7 @@ namespace Content.General
         public string Name => "Attack";
         public int Cost => 1;
         public bool Blocking => true;
+        public string Description => $"Attacks the enemy in front for {damage} damage";
 
         [SerializeField] private float damage;
         [SerializeField] private int attackRadius;

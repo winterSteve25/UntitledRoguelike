@@ -13,7 +13,8 @@ namespace Combat
         /// And if the energy should be subtracted
         /// </summary>
         bool Blocking { get; }
-        
+        string Description { get; }
+
         /// <summary>
         /// Performs the action
         /// </summary>

@@ -2,13 +2,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Combat
+namespace Combat.UI
 {
     public class CombatInfoUI : MonoBehaviour
     {
         [SerializeField] private TMP_Text turnText;
-        [SerializeField] private TMP_Text energyText;
         [SerializeField] private Button nextTurnButton;
+        [SerializeField] private Image[] energies;
 
         private void OnEnable()
         {
@@ -31,20 +31,26 @@ namespace Combat
             if (friendly == CombatManager.Current.AmIFriendly)
             {
                 turnText.text = "Your Turn";
-                energyText.gameObject.SetActive(true);
                 nextTurnButton.gameObject.SetActive(true);
             }
             else
             {
                 turnText.text = "Opponent Turn";
-                energyText.gameObject.SetActive(false);
                 nextTurnButton.gameObject.SetActive(false);
             }
         }
 
-        public void UpdateEnergy(int playerEnergy, int maxEnergy)
+        public void UpdateEnergy(int playerEnergy)
         {
-            energyText.text = $"Energy: {playerEnergy}/{maxEnergy}";
+            foreach (var energy in energies)
+            {
+                energy.gameObject.SetActive(false);
+            }
+
+            for (var i = 0; i < playerEnergy; i++)
+            {
+                energies[i].gameObject.SetActive(true);
+            }
         }
     }
 }

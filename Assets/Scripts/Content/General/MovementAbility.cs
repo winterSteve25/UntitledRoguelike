@@ -9,6 +9,7 @@ namespace Content.General
         public string Name => "Move";
         public int Cost => 1;
         public bool Blocking => true;
+        public string Description => "Moves the unit to a selected location within range";
 
         [field: SerializeField] public int MovementRadius { get; private set; }
         [field: SerializeField] public SpotSelectionMode MovementMode { get; private set; }

@@ -18,9 +18,6 @@ namespace Deck
         private Slot[,] _slots;
         private RectTransform _rectTransform;
 
-        public Inventory Inventory => _inventory;
-        public Slot this[int i, int j] => _slots[i, j];
-
         public void Init(Vector2Int size, Inventory inventory)
         {
             _inventory = inventory;

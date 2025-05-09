@@ -8,28 +8,29 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace Combat
+namespace Combat.UI
 {
     public class SelectedUnitUI : MonoBehaviour
     {
         [SerializeField] private Camera cam;
         [SerializeField] private CanvasGroup panel;
 
-        [Header("UI Elements")] [SerializeField]
-        private TMP_Text unitName;
-
+        [Header("UI Elements")] 
+        [SerializeField] private TMP_Text unitName;
         [SerializeField] private TMP_Text hp;
+        [SerializeField] private Image icon;
         [SerializeField] private RectTransform btnsGroup;
-        [SerializeField] private Button abilityBtnPrefab;
+        [SerializeField] private AbilityButton abilityBtnPrefab;
+        [SerializeField] private ScrollUI scrollUI;
 
         public Unit Showing => _showing;
         private Unit _showing;
-        private List<(Button, int)> _abilityBtns;
+        private List<(AbilityButton, int)> _abilityBtns;
         private bool _canOpenMenu;
 
         private void Awake()
         {
-            _abilityBtns = new List<(Button, int)>();
+            _abilityBtns = new List<(AbilityButton, int)>();
             _canOpenMenu = true;
         }
 
@@ -70,7 +71,7 @@ namespace Combat
             if (unit == null)
             {
                 Tween.UIPivotY(panelTransform, 1, 0.1f);
-                Tween.UIAnchoredPositionY(panelTransform, -50, 0.2f);
+                Tween.UIAnchoredPositionY(panelTransform, -80, 0.2f);
                 _showing = null;
 
                 foreach (var btn in _abilityBtns)
@@ -79,13 +80,14 @@ namespace Combat
                 }
 
                 _abilityBtns.Clear();
+                scrollUI.Hide();
                 return;
             }
 
             if (_showing == null)
             {
                 Tween.UIPivotY(panelTransform, 0, 0.1f);
-                Tween.UIAnchoredPositionY(panelTransform, 50, 0.2f);
+                Tween.UIAnchoredPositionY(panelTransform, 20, 0.2f);
             }
 
             foreach (var btn in _abilityBtns)
@@ -94,9 +96,16 @@ namespace Combat
             }
 
             _abilityBtns.Clear();
-
-            unitName.text = unit.Type.Name;
             _showing = unit;
+            
+            var size = icon.rectTransform.sizeDelta;
+            var ratio = unit.Type.Sprite.rect.width / unit.Type.Sprite.rect.height;
+            size.x = size.y * ratio;
+            
+            unitName.text = unit.Type.Name;
+            icon.sprite = unit.Type.Sprite;
+            icon.rectTransform.sizeDelta = size;
+            
             ChangeHp(unit, 0, unit.Hp, DamageSource.Healing, null);
 
             var combatManager = CombatManager.Current;
@@ -106,12 +115,11 @@ namespace Combat
             {
                 // TODO: Use pools
                 var btn = Instantiate(abilityBtnPrefab, btnsGroup);
-                btn.interactable = unit.Interactable
+                btn.Interactable = unit.Interactable
                                    && combatManager.AmIFriendly == unit.Friendly
                                    && combatManager.Me.Energy >= ability.Cost
                                    && combatManager.MyTurn;
-                btn.GetComponentInChildren<TMP_Text>().text = $"{ability.Name} ({ability.Cost})";
-                btn.onClick.AddListener(() =>
+                btn.Init(() =>
                 {
                     if (ability.Blocking)
                     {
@@ -128,7 +136,7 @@ namespace Combat
                         ability.Perform(combatManager, unit, areaSelector)
                             .Forget();
                     }
-                });
+                }, ability, scrollUI);
 
                 _abilityBtns.Add((btn, ability.Cost));
             }
@@ -158,14 +166,14 @@ namespace Combat
 
         private void ChangeHp(Unit unit, float original, float current, DamageSource source, CancelToken cancelToken)
         {
-            hp.text = $"Hp: {current}/{unit.Type.MaxHp}";
+            hp.text = current.ToString("F1");
         }
 
         public void UnitInteractableChange(bool interactable)
         {
             foreach (var btn in _abilityBtns)
             {
-                btn.Item1.interactable = interactable && CombatManager.Current.AmIFriendly == _showing.Friendly && CombatManager.Current.MyTurn;
+                btn.Item1.Interactable = interactable && CombatManager.Current.AmIFriendly == _showing.Friendly && CombatManager.Current.MyTurn;
             }
         }
 
@@ -175,16 +183,17 @@ namespace Combat
 
             foreach (var btn in _abilityBtns)
             {
-                btn.Item1.interactable = btn.Item1.interactable && friendly == _showing.Friendly;
+                btn.Item1.Interactable = btn.Item1.Interactable && friendly == _showing.Friendly;
             }
         }
 
         public void UpdateEnergy(int playerEnergy)
         {
+            if (_abilityBtns == null) return;
             foreach (var btn in _abilityBtns)
             {
-                btn.Item1.interactable =
-                    btn.Item1.interactable
+                btn.Item1.Interactable =
+                    btn.Item1.Interactable
                     && CombatManager.Current.AmIFriendly == _showing.Friendly
                     && btn.Item2 <= playerEnergy
                     && CombatManager.Current.MyTurn;

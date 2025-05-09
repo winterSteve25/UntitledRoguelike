@@ -11,6 +11,7 @@ namespace Content.Slime
         public string Name => "Split";
         public int Cost => 1;
         public bool Blocking => false;
+        public string Description => "Splits the big slime into 4 smaller slimes";
 
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
