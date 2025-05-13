@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils;
 
-namespace Deck
+namespace Combat.Deck
 {
     public class InventoryUI : MonoBehaviour
     {
@@ -12,6 +10,7 @@ namespace Deck
         [SerializeField] private Canvas canvas;
         [SerializeField] private Slot slotPrefab;
         [SerializeField] private ItemVisual visualPrefab;
+        [SerializeField] private RectTransform everythingParent;
 
         private Inventory _inventory;
         private List<ItemInstanceWithVisuals> _items;
@@ -53,7 +52,7 @@ namespace Deck
             var visuals = Instantiate(visualPrefab, transform.parent);
             var instance = new ItemInstanceWithVisuals(item, visuals);
 
-            visuals.Init(instance, gridLayout, _slots[item.Position.x, item.Position.y], _inventory, canvas);
+            visuals.Init(instance, gridLayout, _slots[item.Position.x, item.Position.y], _inventory, canvas, everythingParent);
             _items.Add(instance);
         }
         

@@ -1,5 +1,5 @@
 using Combat;
-using Deck;
+using Combat.Deck;
 using UnityEngine;
 
 namespace Content.General

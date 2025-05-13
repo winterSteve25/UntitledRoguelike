@@ -1,5 +1,5 @@
 using Combat;
-using Deck;
+using Combat.Deck;
 using Levels;
 using UnityEngine;
 using UnityEngine.InputSystem;

@@ -1,5 +1,5 @@
+using Combat.Deck;
 using Combat.UI;
-using Deck;
 using Unity.Netcode;
 using UnityEngine;
 

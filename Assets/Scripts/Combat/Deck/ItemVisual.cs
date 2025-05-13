@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using Combat;
+using PrimeTween;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Utils;
 
-namespace Deck
+namespace Combat.Deck
 {
     public class ItemVisual : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
@@ -18,6 +18,7 @@ namespace Deck
         private bool _followMouse;
         private Slot _slot;
         private Inventory _inventory;
+        private RectTransform _deckParent;
 
         private void Update()
         {
@@ -26,10 +27,11 @@ namespace Deck
         }
 
         public void Init(InventoryUI.ItemInstanceWithVisuals item, GridLayoutGroup grid, Slot position, Inventory inventory,
-            Canvas canvas)
+            Canvas canvas, RectTransform deckParent)
         {
             followBehaviour.Init(canvas, item.ItemType.Size);
             image.sprite = item.ItemType.Sprite;
+            _deckParent = deckParent;
 
             RectTransform rectTransform = (RectTransform)transform;
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
@@ -71,12 +73,18 @@ namespace Deck
         public void OnPointerDown(PointerEventData eventData)
         {
             FollowMouse();
+
+            Tween.UIPivotY(_deckParent, 1, 0.1f);
+            Tween.UIAnchoredPositionY(_deckParent, -20, 0.1f);
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             var list = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData, list);
+            
+            Tween.UIPivotY(_deckParent, 0, 0.1f);
+            Tween.UIAnchoredPositionY(_deckParent, 20, 0.1f);
 
             foreach (var item in list)
             {

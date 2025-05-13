@@ -1,8 +1,7 @@
 using System;
-using Combat;
 using UnityEngine;
 
-namespace Deck
+namespace Combat.Deck
 {
     public abstract class ItemType : ScriptableObject
     {

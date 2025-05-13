@@ -681,6 +681,7 @@ MonoBehaviour:
   canvas: {fileID: 253650646}
   slotPrefab: {fileID: 978189980823864480, guid: 5be735506d990da4f99b92753e1bbbcd, type: 3}
   visualPrefab: {fileID: 5663922041448507704, guid: 10313093f9ad7c6489274397a87d805f, type: 3}
+  everythingParent: {fileID: 425592009}
 --- !u!114 &425592012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3811,6 +3812,7 @@ MonoBehaviour:
   canvas: {fileID: 253650646}
   slotPrefab: {fileID: 978189980823864480, guid: 5be735506d990da4f99b92753e1bbbcd, type: 3}
   visualPrefab: {fileID: 5663922041448507704, guid: 10313093f9ad7c6489274397a87d805f, type: 3}
+  everythingParent: {fileID: 383581054}
 --- !u!1 &1715043534
 GameObject:
   m_ObjectHideFlags: 0
@@ -3821,6 +3823,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1715043535}
   - component: {fileID: 1715043536}
+  - component: {fileID: 1715043537}
   m_Layer: 5
   m_Name: Abilities
   m_TagString: Untagged
@@ -3844,7 +3847,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -29.5}
+  m_AnchoredPosition: {x: 0.005004883, y: -39.4}
   m_SizeDelta: {x: 235.85, y: 84.29001}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1715043536
@@ -3873,6 +3876,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1715043537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715043534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 244599c47f894f03a266bed160eb109a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  btnsGroup: {fileID: 1715043535}
+  abilityBtnPrefab: {fileID: 1363775314069569316, guid: 547ccae69e792fb47aaf604218c6a055, type: 3}
 --- !u!1 &1762238732
 GameObject:
   m_ObjectHideFlags: 0
@@ -4728,8 +4745,7 @@ MonoBehaviour:
   unitName: {fileID: 1123373141}
   hp: {fileID: 943689042}
   icon: {fileID: 2024988203}
-  btnsGroup: {fileID: 1715043535}
-  abilityBtnPrefab: {fileID: 1363775314069569316, guid: 547ccae69e792fb47aaf604218c6a055, type: 3}
+  abilityBtns: {fileID: 1715043537}
   scrollUI: {fileID: 693846673}
 --- !u!1 &2136988244
 GameObject:

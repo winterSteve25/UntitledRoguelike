@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using Levels;
 using PrimeTween;
 using TMPro;
@@ -19,18 +17,15 @@ namespace Combat.UI
         [SerializeField] private TMP_Text unitName;
         [SerializeField] private TMP_Text hp;
         [SerializeField] private Image icon;
-        [SerializeField] private RectTransform btnsGroup;
-        [SerializeField] private AbilityButton abilityBtnPrefab;
+        [SerializeField] private AbilitiesButtonGroup abilityBtns;
         [SerializeField] private ScrollUI scrollUI;
 
         public Unit Showing => _showing;
         private Unit _showing;
-        private List<(AbilityButton, int)> _abilityBtns;
         private bool _canOpenMenu;
 
         private void Awake()
         {
-            _abilityBtns = new List<(AbilityButton, int)>();
             _canOpenMenu = true;
         }
 
@@ -73,13 +68,7 @@ namespace Combat.UI
                 Tween.UIPivotY(panelTransform, 1, 0.1f);
                 Tween.UIAnchoredPositionY(panelTransform, -80, 0.2f);
                 _showing = null;
-
-                foreach (var btn in _abilityBtns)
-                {
-                    Destroy(btn.Item1.gameObject);
-                }
-
-                _abilityBtns.Clear();
+                abilityBtns.Clear();
                 scrollUI.Hide();
                 return;
             }
@@ -90,12 +79,7 @@ namespace Combat.UI
                 Tween.UIAnchoredPositionY(panelTransform, 20, 0.2f);
             }
 
-            foreach (var btn in _abilityBtns)
-            {
-                Destroy(btn.Item1.gameObject);
-            }
-
-            _abilityBtns.Clear();
+            abilityBtns.Clear();
             _showing = unit;
             
             var size = icon.rectTransform.sizeDelta;
@@ -113,32 +97,7 @@ namespace Combat.UI
 
             foreach (var ability in unit.Abilities)
             {
-                // TODO: Use pools
-                var btn = Instantiate(abilityBtnPrefab, btnsGroup);
-                btn.Interactable = unit.Interactable
-                                   && combatManager.AmIFriendly == unit.Friendly
-                                   && combatManager.Me.Energy >= ability.Cost
-                                   && combatManager.MyTurn;
-                btn.Init(() =>
-                {
-                    if (ability.Blocking)
-                    {
-                        UniTask.Void(async () =>
-                        {
-                            var successful = await ability.Perform(combatManager, unit, areaSelector);
-                            if (!successful) return;
-                            combatManager.Me.Energy -= ability.Cost;
-                        });
-                    }
-                    else
-                    {
-                        combatManager.Me.Energy -= ability.Cost;
-                        ability.Perform(combatManager, unit, areaSelector)
-                            .Forget();
-                    }
-                }, ability, scrollUI);
-
-                _abilityBtns.Add((btn, ability.Cost));
+                abilityBtns.AddAbility(combatManager, unit, ability, scrollUI, areaSelector);
             }
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(panelTransform);
@@ -171,7 +130,8 @@ namespace Combat.UI
 
         public void UnitInteractableChange(bool interactable)
         {
-            foreach (var btn in _abilityBtns)
+            if (abilityBtns.List == null) return;
+            foreach (var btn in abilityBtns.List)
             {
                 btn.Item1.Interactable = interactable && CombatManager.Current.AmIFriendly == _showing.Friendly && CombatManager.Current.MyTurn;
             }
@@ -180,8 +140,8 @@ namespace Combat.UI
         private void TurnChanged(int turnNumber, bool friendly)
         {
             if (_showing == null) return;
-
-            foreach (var btn in _abilityBtns)
+            if (abilityBtns.List == null) return;
+            foreach (var btn in abilityBtns.List)
             {
                 btn.Item1.Interactable = btn.Item1.Interactable && friendly == _showing.Friendly;
             }
@@ -189,8 +149,8 @@ namespace Combat.UI
 
         public void UpdateEnergy(int playerEnergy)
         {
-            if (_abilityBtns == null) return;
-            foreach (var btn in _abilityBtns)
+            if (abilityBtns.List == null) return;
+            foreach (var btn in abilityBtns.List)
             {
                 btn.Item1.Interactable =
                     btn.Item1.Interactable

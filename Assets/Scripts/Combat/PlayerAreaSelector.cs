@@ -73,6 +73,14 @@ namespace Combat
             worldPos.z = 0;
             var clickedTile = Level.Current.WorldToCell(worldPos);
             var flipboard = !CombatManager.Current.AmIFriendly;
+            
+            var dx = Mathf.FloorToInt(_centerSize.x * 0.5f);
+            var dy = Mathf.FloorToInt(_centerSize.y * 0.5f);
+
+            if (flipboard)
+            {
+                clickedTile -= new Vector2Int(dx, dy);
+            }
 
             if (_isValid(clickedTile) && IsValid(clickedTile, flipboard))
             {
@@ -113,17 +121,24 @@ namespace Combat
             selectedUnitUI.Show(null);
             selectedUnitUI.CanOpenMenu(false);
 
-            for (int i = -radius; i <= radius + Mathf.FloorToInt(centerSize.x * 0.5f); i++)
+            var dx = Mathf.FloorToInt(centerSize.x * 0.5f);
+            var dy = Mathf.FloorToInt(centerSize.y * 0.5f);
+            
+            for (int i = -radius; i <= radius + dx; i++)
             {
-                for (int j = -radius; j <= radius + Mathf.FloorToInt(centerSize.y * 0.5f); j++)
+                for (int j = -radius; j <= radius + dy; j++)
                 {
                     var pos = new Vector2Int(center.x + i, center.y + j);
-
                     var wp = Unit.GetWorldPosition(pos, Vector2Int.one);
                     var visual = _moveablePool.Get();
                     visual.transform.position = wp;
                     _activeObjects.Add(visual);
                     visual.GetComponentInChildren<SpriteRenderer>().color = Color.gray;
+
+                    if (flipboard)
+                    {
+                        pos -= new Vector2Int(dx, dy);
+                    }
 
                     if (!_isValid(pos))
                     {
@@ -155,9 +170,9 @@ namespace Combat
             return _selected;
         }
 
-        private bool IsValid(Vector2Int pos, bool flipBoard)
+        private bool IsValid(Vector2Int pos, bool flipboard)
         {
-            return IAreaSelector.IsValid(_center, _centerSize, pos, _radius, _mode, flipBoard);
+            return IAreaSelector.IsValid(_center, _centerSize, pos, _radius, _mode, flipboard);
         }
     }
 

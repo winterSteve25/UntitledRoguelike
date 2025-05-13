@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-namespace Deck
+namespace Combat.Deck
 {
     public class Slot : MonoBehaviour
     {

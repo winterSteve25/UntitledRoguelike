@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using Utils;
 
-namespace Deck
+namespace Combat.Deck
 {
     public class Inventory : NetworkBehaviour
     {
