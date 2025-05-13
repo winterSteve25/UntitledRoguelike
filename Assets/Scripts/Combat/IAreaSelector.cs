@@ -10,11 +10,11 @@ namespace Combat
         UniTask<Vector2Int?> SelectArea(Vector2Int center, Vector2Int centerSize, int radius,
             Predicate<Vector2Int> isValid, SpotSelectionMode mode = SpotSelectionMode.Omnidirectional);
 
-        public static bool IsValid(Vector2Int center, Vector2Int centerSize, Vector2Int target, int radius, SpotSelectionMode mode)
+        public static bool IsValid(Vector2Int center, Vector2Int centerSize, Vector2Int target, int radius, SpotSelectionMode mode, bool flipBoard)
         {
-            if (RectangleTester.InBound(centerSize, center, target.x, target.y, false, !CombatManager.Current.AmIFriendly)) return false;
+            if (RectangleTester.InBound(centerSize, center, target.x, target.y, false, flipBoard)) return false;
             if (!RectangleTester.InBound(new Vector2Int(radius, radius) * 2 + centerSize,
-                    center - new Vector2Int(radius, radius), target.x, target.y, false, !CombatManager.Current.AmIFriendly)) return false;
+                    center - new Vector2Int(radius, radius), target.x, target.y, false, flipBoard)) return false;
 
             if (mode == SpotSelectionMode.Straight)
             {

@@ -18,6 +18,9 @@ namespace Combat
 
     public class Unit : NetworkBehaviour
     {
+        private static readonly Color FriendlyColor = new Color(74 / 255f, 194 / 255f, 112 / 255f);
+        private static readonly Color UnfriendlyColor = new Color(202 / 255f, 70 / 255f, 92 / 255f);
+        
         [SerializeField] private GameObject abilitiesParent;
         [SerializeField] private GameObject passivesParent;
         [SerializeField] private SpriteRenderer visual;
@@ -68,7 +71,7 @@ namespace Combat
             var combatManager = CombatManager.Current;
             Abilities = abilitiesParent.GetComponents<IAbility>();
             Passives = passivesParent.GetComponents<IPassive>();
-            border.color = combatManager.AmIFriendly == friendly ? Color.aquamarine : Color.crimson;
+            border.color = combatManager.AmIFriendly == friendly ? FriendlyColor : UnfriendlyColor;
 
             _interactable = true;
             GridPositionSync = position;

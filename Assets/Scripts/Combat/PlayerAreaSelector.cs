@@ -72,8 +72,9 @@ namespace Combat
             var worldPos = cam.ScreenToWorldPoint(screenPos);
             worldPos.z = 0;
             var clickedTile = Level.Current.WorldToCell(worldPos);
+            var flipboard = !CombatManager.Current.AmIFriendly;
 
-            if (_isValid(clickedTile) && IsValid(clickedTile))
+            if (_isValid(clickedTile) && IsValid(clickedTile, flipboard))
             {
                 _selected = clickedTile;
                 _ready = true;
@@ -97,6 +98,8 @@ namespace Combat
         public async UniTask<Vector2Int?> SelectArea(Vector2Int center, Vector2Int centerSize, int radius,
             Predicate<Vector2Int> isValid, SpotSelectionMode mode = SpotSelectionMode.Omnidirectional)
         {
+            var flipboard = !CombatManager.Current.AmIFriendly;
+
             _center = center;
             _centerSize = centerSize;
             _radius = radius;
@@ -116,7 +119,7 @@ namespace Combat
                 {
                     var pos = new Vector2Int(center.x + i, center.y + j);
 
-                    var wp = Level.Current.CellToWorld(pos);
+                    var wp = Unit.GetWorldPosition(pos, Vector2Int.one);
                     var visual = _moveablePool.Get();
                     visual.transform.position = wp;
                     _activeObjects.Add(visual);
@@ -127,9 +130,14 @@ namespace Combat
                         visual.GetComponentInChildren<SpriteRenderer>().color = Color.red;
                     }
 
-                    if (!IsValid(pos))
+                    if (!IsValid(pos, flipboard))
                     {
                         visual.GetComponentInChildren<SpriteRenderer>().color = Color.blue;
+                    }
+
+                    if (i == 0 && j == 0)
+                    {
+                        visual.GetComponentInChildren<SpriteRenderer>().color = Color.green;
                     }
                 }
             }
@@ -143,13 +151,13 @@ namespace Combat
             }
 
             _activeObjects.Clear();
-            
+
             return _selected;
         }
 
-        private bool IsValid(Vector2Int pos)
+        private bool IsValid(Vector2Int pos, bool flipBoard)
         {
-            return IAreaSelector.IsValid(_center, _centerSize, pos, _radius, _mode);
+            return IAreaSelector.IsValid(_center, _centerSize, pos, _radius, _mode, flipBoard);
         }
     }
 
