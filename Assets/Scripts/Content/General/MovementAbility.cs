@@ -16,10 +16,16 @@ namespace Content.General
 
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
-            var area = await areaSelector.SelectArea(unit.GridPositionSync, unit.Type.Size, MovementRadius,
-                p => combatManager.CanMoveTo(unit, p), MovementMode);
-            if (area == null) return false;
+            var area = await areaSelector.SelectArea(
+                unit.GridPositionSync,
+                unit.Type.Size,
+                unit.Type.Size,
+                MovementRadius,
+                p => combatManager.CanMoveTo(unit, p),
+                MovementMode
+            );
             
+            if (area == null) return false;
             unit.MoveToRpc(area.Value);
             return true;
         }

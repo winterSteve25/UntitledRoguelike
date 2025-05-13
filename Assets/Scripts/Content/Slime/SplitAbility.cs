@@ -17,8 +17,8 @@ namespace Content.Slime
         {
             unit.Interactable = false;
             await IAbility.UntilNextFriendlyTurn(combatManager);
+            
             combatManager.DespawnUnit(unit);
-
             combatManager.SpawnUnit(
                 smallSlime, new Vector2Int(unit.GridPositionSync.x, unit.GridPositionSync.y), unit.Friendly);
             combatManager.SpawnUnit(

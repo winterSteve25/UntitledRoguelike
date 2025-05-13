@@ -45,7 +45,7 @@ namespace Combat.UI
         {
             if (_interactable)
             {
-                Tween.UIAnchoredPosition(visual, new Vector2(0, 10), 0.1f);
+                Tween.UIAnchoredPositionY(visual, 0, 10, 0.1f);
             }
             
             scrollUI.Show(_ability);
@@ -55,7 +55,7 @@ namespace Combat.UI
         {
             if (_interactable)
             {
-                Tween.UIAnchoredPosition(visual, new Vector2(0, 0), 0.1f);
+                Tween.UIAnchoredPositionY(visual, 0, 0.1f);
             }
             
             scrollUI.Hide();
@@ -63,7 +63,7 @@ namespace Combat.UI
 
         private void InteractChanged()
         {
-            Tween.UIAnchoredPosition(visual, new Vector2(0, _interactable ? 0 : -35f), 0.1f);
+            Tween.UIAnchoredPositionY(visual, _interactable ? 0 : -35f, 0.1f);
         }
     }
 }

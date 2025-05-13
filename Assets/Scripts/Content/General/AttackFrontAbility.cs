@@ -14,11 +14,18 @@ namespace Content.General
         [SerializeField] private float damage;
         [SerializeField] private int attackRadius;
         [SerializeField] private SpotSelectionMode mode;
-        
+
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
-            var pos = await areaSelector.SelectArea(unit.GridPositionSync, unit.Type.Size, attackRadius,
-                 p => combatManager.TryGetUnit(p.x, p.y, out _), mode);
+            var pos = await areaSelector.SelectArea(
+                unit.GridPositionSync,
+                unit.Type.Size,
+                Vector2Int.one,
+                attackRadius,
+                p => combatManager.TryGetUnit(p.x, p.y, out var u) && u != unit,
+                mode
+            );
+            
             if (pos == null) return false;
             
             var u = combatManager.GetUnit(pos.Value.x, pos.Value.y);

@@ -26,6 +26,7 @@ namespace Combat
 
         private Vector2Int _center;
         private Vector2Int _centerSize;
+        private Vector2Int _targetSize;
         private SpotSelectionMode _mode;
         private int _radius;
         private Predicate<Vector2Int> _isValid;
@@ -73,9 +74,9 @@ namespace Combat
             worldPos.z = 0;
             var clickedTile = Level.Current.WorldToCell(worldPos);
             var flipboard = !CombatManager.Current.AmIFriendly;
-            
-            var dx = Mathf.FloorToInt(_centerSize.x * 0.5f);
-            var dy = Mathf.FloorToInt(_centerSize.y * 0.5f);
+
+            var dx = Mathf.FloorToInt(_targetSize.x * 0.5f);
+            var dy = Mathf.FloorToInt(_targetSize.y * 0.5f);
 
             if (flipboard)
             {
@@ -103,13 +104,20 @@ namespace Combat
         // only the center has to within the radius
         // if the destination size is non symmetric => destSize.x != destSize.y 
         // then the mouse will select from the bottom left corner => only bottom left has to be within radius.
-        public async UniTask<Vector2Int?> SelectArea(Vector2Int center, Vector2Int centerSize, int radius,
-            Predicate<Vector2Int> isValid, SpotSelectionMode mode = SpotSelectionMode.Omnidirectional)
+        public async UniTask<Vector2Int?> SelectArea(
+            Vector2Int center,
+            Vector2Int centerSize,
+            Vector2Int targetSize,
+            int radius,
+            Predicate<Vector2Int> isValid,
+            SpotSelectionMode mode = SpotSelectionMode.Omnidirectional
+        )
         {
             var flipboard = !CombatManager.Current.AmIFriendly;
 
             _center = center;
             _centerSize = centerSize;
+            _targetSize = targetSize;
             _radius = radius;
             _mode = mode;
             _isValid = isValid;
@@ -121,9 +129,9 @@ namespace Combat
             selectedUnitUI.Show(null);
             selectedUnitUI.CanOpenMenu(false);
 
-            var dx = Mathf.FloorToInt(centerSize.x * 0.5f);
-            var dy = Mathf.FloorToInt(centerSize.y * 0.5f);
-            
+            var dx = Mathf.FloorToInt(_targetSize.x * 0.5f);
+            var dy = Mathf.FloorToInt(_targetSize.y * 0.5f);
+
             for (int i = -radius; i <= radius + dx; i++)
             {
                 for (int j = -radius; j <= radius + dy; j++)

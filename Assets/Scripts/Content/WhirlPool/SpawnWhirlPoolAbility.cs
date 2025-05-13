@@ -10,6 +10,7 @@ namespace Content.WhirlPool
         public string Name => "Whirl Pool";
         public int Cost => 3;
         public bool Blocking => true;
+
         public string Description =>
             "Spawns a whirl pool that sucks nearby units into the center, then disperses all units randomly onto the board";
 
@@ -18,13 +19,16 @@ namespace Content.WhirlPool
 
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
-            var area = await areaSelector.SelectArea(unit.GridPositionSync, unit.Type.Size, spawnRadius,
-                p => Level.Current.InBounds(p, WhirlPoolGadget.Size, !combatManager.AmIFriendly));
+            var area = await areaSelector.SelectArea(
+                unit.GridPositionSync,
+                unit.Type.Size,
+                WhirlPoolGadget.Size,
+                spawnRadius,
+                _ => true
+            );
 
             if (area == null) return false;
-
             combatManager.SpawnGadget(prefab, area.Value);
-
             return true;
         }
     }

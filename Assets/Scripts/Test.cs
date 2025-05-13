@@ -27,5 +27,10 @@ public class Test : MonoBehaviour
         {
             Debug.Log($"{u} - {u.GridPositionSync}");
         }
+        
+        foreach (var u in CombatManager.Current.ActiveGadgets)
+        {
+            Debug.Log($"{u} - {u.GridPositionSync}");
+        }
     }
 }

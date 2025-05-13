@@ -7,7 +7,7 @@ namespace Combat
 {
     public interface IAreaSelector
     {
-        UniTask<Vector2Int?> SelectArea(Vector2Int center, Vector2Int centerSize, int radius,
+        UniTask<Vector2Int?> SelectArea(Vector2Int center, Vector2Int centerSize, Vector2Int targetSize, int radius,
             Predicate<Vector2Int> isValid, SpotSelectionMode mode = SpotSelectionMode.Omnidirectional);
 
         public static bool IsValid(Vector2Int center, Vector2Int centerSize, Vector2Int target, int radius, SpotSelectionMode mode, bool flipboard)

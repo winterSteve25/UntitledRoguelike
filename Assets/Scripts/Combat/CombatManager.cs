@@ -6,7 +6,6 @@ using Combat.UI;
 using Levels;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Utils;
 
 namespace Combat
@@ -22,15 +21,18 @@ namespace Combat
         public Player Me => AmIFriendly ? playerFriendly : playerUnfriendly;
         public bool MyTurn => AmIFriendly == IsFriendlyTurn;
         public List<Unit> ActiveUnits => _activeUnitsSync;
+        public List<Gadget> ActiveGadgets => _activeGadgetsSync;
 
         public event Action<int, bool> OnTurnChanged;
 
-        [Header("Configurations")] 
-        [SerializeField] private int maxEnergy;
+        [Header("Configurations")] [SerializeField]
+        private int maxEnergy;
+
         [SerializeField] private Vector2Int inventorySize;
 
-        [Header("References")] 
-        [SerializeField] private Level level;
+        [Header("References")] [SerializeField]
+        private Level level;
+
         [SerializeField] private CombatInfoUI infoUI;
         [SerializeField] private SelectedUnitUI selectedUnitUI;
         [SerializeField] private InventoryUI myInventoryUI;
@@ -74,7 +76,7 @@ namespace Combat
             {
                 NextTurnRpc();
             }
-            
+
             if (AmIFriendly) return;
             var levelTransform = Level.Current.transform;
             levelTransform.position *= -1;
@@ -214,7 +216,12 @@ namespace Combat
 
         public void SpawnGadget(Gadget prefab, Vector2Int position)
         {
-            SpawnGadgetRpc(prefab.name, position);
+            var pos = AmIFriendly
+                ? position
+                : position - new Vector2Int(Mathf.FloorToInt(prefab.GridSize.x / 2f),
+                    Mathf.FloorToInt(prefab.GridSize.y / 2f));
+            
+            SpawnGadgetRpc(prefab.name, pos);
         }
 
         [Rpc(SendTo.Server)]

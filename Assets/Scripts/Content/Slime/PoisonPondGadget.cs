@@ -12,7 +12,7 @@ namespace Content.Slime
         protected override void OnTurn(bool friendlyTurn)
         {
             var cm = CombatManager.Current;
-            if (!cm.TryGetUnit(GridPosition.x, GridPosition.y, out var unit)) return;
+            if (!cm.TryGetUnit(GridPositionSync.x, GridPositionSync.y, out var unit)) return;
             unit.AddHpRpc(-damage, DamageSource.Poison);
         }
     }

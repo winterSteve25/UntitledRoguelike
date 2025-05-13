@@ -134,8 +134,7 @@ namespace Combat
         {
             if (!CombatManager.Current.AmIFriendly)
             {
-                return Level.Current.CellToWorld(position + new Vector2Int(1 + Mathf.FloorToInt(size.x / 2f),
-                    1 + Mathf.FloorToInt(size.y / 2f)));
+                return Level.Current.CellToWorld(position + size);
             }
 
             return Level.Current.CellToWorld(position);

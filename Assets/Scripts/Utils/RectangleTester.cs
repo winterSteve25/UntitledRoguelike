@@ -2,27 +2,27 @@ using UnityEngine;
 
 namespace Utils
 {
-    public class RectangleTester
+    public static class RectangleTester
     {
-        public static bool InBound(Vector2Int size, Vector2Int position, int x, int y, bool inclusive, bool upsideDown)
+        public static bool InBound(Vector2Int boundSize, Vector2Int boundPosition, int targetX, int targetY, bool inclusive, bool upsideDown)
         {
-            return InBound(size, position, x, y, 0, 0, inclusive, upsideDown);
+            return InBound(boundSize, boundPosition, targetX, targetY, 0, 0, inclusive, upsideDown);
         }
 
-        public static bool InBound(Vector2Int size, Vector2Int position, int x, int y, int width, int height,
+        public static bool InBound(Vector2Int boundSize, Vector2Int boundPosition, int targetX, int targetY, int targetW, int targetH,
             bool inclusive, bool upsideDown)
         {
             if (upsideDown)
             {
-                return InBoundUpsideDown(size, position, x, y, width, height, inclusive);
+                return InBoundUpsideDown(boundSize, boundPosition, targetX, targetY, targetW, targetH, inclusive);
             }
 
             if (inclusive)
-                return x >= position.x && x + width <= position.x + size.x && y >= position.y &&
-                       y + height <= position.y + size.y;
+                return targetX >= boundPosition.x && targetX + targetW <= boundPosition.x + boundSize.x && targetY >= boundPosition.y &&
+                       targetY + targetH <= boundPosition.y + boundSize.y;
 
-            return x >= position.x && x + width < position.x + size.x && y >= position.y &&
-                   y + height < position.y + size.y;
+            return targetX >= boundPosition.x && targetX + targetW < boundPosition.x + boundSize.x && targetY >= boundPosition.y &&
+                   targetY + targetH < boundPosition.y + boundSize.y;
         }
 
         private static bool InBoundUpsideDown(Vector2Int size, Vector2Int position, int x, int y, int width, int height,
