@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2808227183690810272}
   - component: {fileID: 3269955522107843887}
   - component: {fileID: 769225175027185178}
-  - component: {fileID: 9095923583406281442}
   m_Layer: 0
   m_Name: Abilities
   m_TagString: Untagged
@@ -63,20 +62,6 @@ MonoBehaviour:
   damage: 0.5
   attackRadius: 1
   mode: 2
---- !u!114 &9095923583406281442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3139600034426546588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcb33c0ef35b4785bc03d61de1ccfb16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefab: {fileID: -2626133442257797908, guid: a7cabf407a5e8474db54afdada947a94, type: 3}
-  spawnRadius: 3
 --- !u!1 &5542329253833166431
 GameObject:
   m_ObjectHideFlags: 0
