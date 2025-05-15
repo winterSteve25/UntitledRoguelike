@@ -1,14 +1,5 @@
 {
   "dependencies": {
-    "com.community.netcode.transport.facepunch": {
-      "version": "https://github.com/Unity-Technologies/multiplayer-community-contributions.git?path=/Transports/com.community.netcode.transport.facepunch",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.netcode.gameobjects": "1.0.0-pre.4"
-      },
-      "hash": "5cea8f048cc16f3575fabcf03af3ebafbc390499"
-    },
     "com.kyrylokuzyk.primetween": {
       "version": "file:../Assets/Plugins/PrimeTween/internal/com.kyrylokuzyk.primetween.tgz",
       "depth": 0,
@@ -410,7 +401,7 @@
     },
     "com.unity.test-framework": {
       "version": "1.5.1",
-      "depth": 0,
+      "depth": 2,
       "source": "builtin",
       "dependencies": {
         "com.unity.ext.nunit": "2.0.3",
