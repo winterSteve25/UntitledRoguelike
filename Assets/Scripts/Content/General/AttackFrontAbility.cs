@@ -10,6 +10,7 @@ namespace Content.General
         public int Cost => 1;
         public bool Blocking => true;
         public string Description => $"Attacks the enemy in front for {damage} damage";
+        public Sprite Icon => Resources.Load<Sprite>("Sprites/AbilityIcons/Attack");
 
         [SerializeField] private float damage;
         [SerializeField] private int attackRadius;

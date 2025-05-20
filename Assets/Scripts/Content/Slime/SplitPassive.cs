@@ -9,21 +9,16 @@ namespace Content.Slime
         
         public void OnSpawned(Unit unit)
         {
-            unit.OnDeath += UnitOnOnDeath;
+            unit.OnDeath += OnDeath;
         }
         
-        private void UnitOnOnDeath(Unit unit)
+        private void OnDeath(Unit unit, CancelToken cancel)
         {
             var combatManager = CombatManager.Current;
+            cancel.Canceled = true;
+            combatManager.DespawnUnit(unit, false);
             
-            combatManager.SpawnUnit(
-                smallSlime, new Vector2Int(unit.GridPositionSync.x, unit.GridPositionSync.y), unit.Friendly);
-            combatManager.SpawnUnit(
-                smallSlime, new Vector2Int(unit.GridPositionSync.x + 1, unit.GridPositionSync.y), unit.Friendly);
-            combatManager.SpawnUnit(
-                smallSlime, new Vector2Int(unit.GridPositionSync.x, unit.GridPositionSync.y + 1), unit.Friendly);
-            combatManager.SpawnUnit(
-                smallSlime, new Vector2Int(unit.GridPositionSync.x + 1, unit.GridPositionSync.y + 1), unit.Friendly);
+            SplitAbility.SpawnSmallSlimes(combatManager, unit, smallSlime);
         }
     }
 }

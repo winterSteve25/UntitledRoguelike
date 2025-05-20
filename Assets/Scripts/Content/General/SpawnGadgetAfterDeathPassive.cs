@@ -12,7 +12,7 @@ namespace Content.General
             unit.OnDeath += UnitOnOnDeath;
         }
         
-        private void UnitOnOnDeath(Unit unit)
+        private void UnitOnOnDeath(Unit unit, CancelToken cancelToken)
         {
             CombatManager.Current.SpawnGadget(prefab, unit.GridPositionSync);
         }

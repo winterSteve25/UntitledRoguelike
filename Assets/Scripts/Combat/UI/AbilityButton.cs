@@ -27,12 +27,18 @@ namespace Combat.UI
             }
         }
 
-        public void Init(Action onClick, IAbility ability, ScrollUI scrollUI)
+        public void Init(Action onClick, IAbility ability, ScrollUI scrollUI, bool interactable)
         {
             _onClick = onClick;
             _ability = ability;
             this.scrollUI = scrollUI;
-            // icon.sprite = ability.;
+            icon.sprite = ability.Icon;
+            _interactable = interactable;
+            
+            if (_interactable) return;
+            var vector2 = visual.anchoredPosition;
+            vector2.y = -35f;
+            visual.anchoredPosition = vector2;
         }
 
         public void OnPointerClick(PointerEventData eventData)

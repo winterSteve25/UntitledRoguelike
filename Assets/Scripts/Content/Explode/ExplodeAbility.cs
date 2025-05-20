@@ -10,10 +10,11 @@ namespace Content.Explode
         public int Cost => 1;
         public bool Blocking => false;
         public string Description => "Explode this unit at the start of the next friendly turn dealing 2 damage";
+        public Sprite Icon => Resources.Load<Sprite>("Sprites/AbilityIcons/Explode");
 
         [SerializeField] private int radius;
         [SerializeField] private int damage;
-        
+
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
             unit.Interactable = false;
@@ -24,16 +25,17 @@ namespace Content.Explode
 
         public static void Explode(CombatManager combatManager, Unit unit, int radius, int damage)
         {
-            combatManager.DespawnUnit(unit);
-            for (int i = -radius; i < radius; i++)
+            var pos = unit.GridPositionSync;
+            pos.x -= radius;
+            pos.y -= radius;
+            
+            foreach (Unit u in combatManager.GetUnitsInArea(pos, new Vector2Int(radius * 2 + unit.Type.Size.x, radius * 2 + unit.Type.Size.y)))
             {
-                for (int j = -radius; j < radius; j++)
-                {
-                    if (!combatManager.TryGetUnit(unit.GridPositionSync.x + i, unit.GridPositionSync.y + j, out var u)) continue;
-                    if (u == unit) continue;
-                    u.AddHpRpc(-damage, DamageSource.Explosion);
-                }
+                if (u == unit) continue;
+                u.AddHpRpc(-damage, DamageSource.Explosion);
             }
+            
+            combatManager.DespawnUnit(unit, true);
         }
     }
 }

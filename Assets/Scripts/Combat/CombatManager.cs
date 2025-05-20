@@ -4,6 +4,7 @@ using System.Linq;
 using Combat.Deck;
 using Combat.UI;
 using Levels;
+using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
 using Utils;
@@ -78,9 +79,14 @@ namespace Combat
             }
 
             if (AmIFriendly) return;
+
             var levelTransform = Level.Current.transform;
             levelTransform.position *= -1;
             levelTransform.rotation = Quaternion.Euler(0, 0, 180);
+            // flip the tiles again to counter the clip of the object
+            var x4 = Level.Current.Tilemap.orientationMatrix;
+            x4 = Matrix4x4.TRS(x4.GetPosition(), Quaternion.Euler(0, 0, 180), x4.lossyScale);
+            Level.Current.Tilemap.orientationMatrix = x4;
         }
 
         public override void OnDestroy()
@@ -151,10 +157,38 @@ namespace Combat
             _activeUnitsSync.Add(u);
         }
 
-        public void DespawnUnit(Unit unit)
+        public void DespawnUnit(Unit unit, bool isDeath)
         {
             RemoveUnitFromListRpc(unit);
             DespawnNetworkObjectRpc(unit.NetworkObject);
+
+            // TODO
+            // WHEN SLIME DIES IT SPLITS BUT IT WILL FIRST DESPAWN AND TRIGGER DEATH..
+            if (!isDeath)
+            {
+                return;
+            }
+
+            bool? f = null;
+            foreach (var u in _activeUnitsSync)
+            {
+                if (u == unit) continue;
+                if (f == null)
+                {
+                    f = u.Friendly;
+                    continue;
+                }
+
+                // checks if every remaining unit is on 1 team
+                if (u.Friendly == f) continue;
+
+                // if one is not the same team then stop right here
+                return;
+            }
+
+            // if the code reaches here all units are on the same team
+            // then the opposing team loses
+            NetworkManager.Shutdown();
         }
 
         [Rpc(SendTo.Server)]
@@ -214,13 +248,31 @@ namespace Combat
             return unit != null;
         }
 
+        public List<Unit> GetUnitsInArea(Vector2Int position, Vector2Int size)
+        {
+            var lst = new List<Unit>();
+
+            foreach (var unit in _activeUnitsSync)
+            {
+                if (!RectangleTester.AreRectanglesOverlapping(
+                        position.x, position.y,
+                        size.x, size.y,
+                        unit.GridPositionSync.x, unit.GridPositionSync.y,
+                        unit.Type.Size.x, unit.Type.Size.y)) continue;
+                
+                lst.Add(unit);
+            }
+
+            return lst;
+        }
+
         public void SpawnGadget(Gadget prefab, Vector2Int position)
         {
             var pos = AmIFriendly
                 ? position
                 : position - new Vector2Int(Mathf.FloorToInt(prefab.GridSize.x / 2f),
                     Mathf.FloorToInt(prefab.GridSize.y / 2f));
-            
+
             SpawnGadgetRpc(prefab.name, pos);
         }
 

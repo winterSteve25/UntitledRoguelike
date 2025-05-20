@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using PrimeTween;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -19,6 +18,7 @@ namespace Combat.Deck
         private Slot _slot;
         private Inventory _inventory;
         private RectTransform _deckParent;
+        private bool _interactable;
 
         private void Update()
         {
@@ -26,12 +26,26 @@ namespace Combat.Deck
             transform.position = _slot.transform.position;
         }
 
-        public void Init(InventoryUI.ItemInstanceWithVisuals item, GridLayoutGroup grid, Slot position, Inventory inventory,
-            Canvas canvas, RectTransform deckParent)
+        public void Init(InventoryUI.ItemInstanceWithVisuals item, GridLayoutGroup grid, Slot position,
+            Inventory inventory, Canvas canvas, RectTransform deckParent, bool interactable)
         {
             followBehaviour.Init(canvas, item.ItemType.Size);
-            image.sprite = item.ItemType.Sprite;
+            
             _deckParent = deckParent;
+            _interactable = interactable;
+            _cam = canvas.worldCamera;
+            _thisInstance = item;
+            _slot = position;
+            _inventory = inventory;
+
+            if (interactable)
+            {
+                image.sprite = item.ItemType.Sprite;
+            }
+            else
+            {
+                image.gameObject.SetActive(false);
+            }
 
             RectTransform rectTransform = (RectTransform)transform;
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
@@ -40,12 +54,7 @@ namespace Combat.Deck
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
                 item.ItemType.Size.y * grid.cellSize.y +
                 grid.spacing.y * Mathf.Max(0, item.ItemType.Size.y - 1));
-
-            _cam = canvas.worldCamera;
-            _thisInstance = item;
-            _slot = position;
-            _inventory = inventory;
-
+            
             transform.position = _slot.transform.position;
         }
 
@@ -72,19 +81,26 @@ namespace Combat.Deck
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            if (!_interactable) return;
             FollowMouse();
 
-            Tween.UIPivotY(_deckParent, 1, 0.1f);
-            Tween.UIAnchoredPositionY(_deckParent, -20, 0.1f);
+            // TODO
+            // if (EventSystem.current.IsPointerOverGameObject(eventData.pointerId)) return;
+            // Tween.UIPivotY(_deckParent, 1, 0.1f);
+            // Tween.UIAnchoredPositionY(_deckParent, -20, 0.1f);
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
+            if (!_interactable) return;
             var list = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData, list);
-            
-            Tween.UIPivotY(_deckParent, 0, 0.1f);
-            Tween.UIAnchoredPositionY(_deckParent, 20, 0.1f);
+
+            // if (EventSystem.current.IsPointerOverGameObject(eventData.pointerId))
+            // {
+            //     Tween.UIPivotY(_deckParent, 0, 0.1f);
+            //     Tween.UIAnchoredPositionY(_deckParent, 20, 0.1f);
+            // }
 
             foreach (var item in list)
             {
@@ -92,7 +108,7 @@ namespace Combat.Deck
                 TryPlaceIn(slot.Pos);
                 return;
             }
-            
+
             TryUseOrCancel();
         }
 
@@ -113,7 +129,7 @@ namespace Combat.Deck
         {
             var pos = _cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var combatManager = CombatManager.Current;
-            
+
             if (combatManager.Me.Energy >= _thisInstance.ItemType.Cost &&
                 combatManager.MyTurn &&
                 _thisInstance.ItemType.CanUse(pos))

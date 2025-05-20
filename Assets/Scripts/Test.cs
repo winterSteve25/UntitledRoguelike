@@ -1,20 +1,18 @@
+using System.Collections.Generic;
 using Combat;
 using Combat.Deck;
-using Levels;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class Test : MonoBehaviour
 {
     [SerializeField] private InventoryUI inventoryUI;
-    [SerializeField] private UnitType a;
-    [SerializeField] private UnitType b;
+    [SerializeField] private List<UnitType> givens;
     [SerializeField] private Camera cam;
         
     private void Start()
     {
-        inventoryUI.AddItem(a, new Vector2Int(0, 0));
-        inventoryUI.AddItem(b, new Vector2Int(2, 0));
+        inventoryUI.AddItemsAnywhere(givens);
     }
 
     private void Update()

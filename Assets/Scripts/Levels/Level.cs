@@ -8,6 +8,7 @@ namespace Levels
     {
         public static Level Current { get; private set; }
         public Tilemap Tilemap => tilemap;
+        public Vector2Int LevelSize => levelSize;
         
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private Vector2Int levelSize;

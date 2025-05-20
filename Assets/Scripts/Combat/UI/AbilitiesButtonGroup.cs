@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Combat.UI
 {
@@ -32,30 +33,32 @@ namespace Combat.UI
         {
             // TODO: Use pools
             var btn = Instantiate(abilityBtnPrefab, btnsGroup);
-            btn.Interactable = unit.Interactable
-                               && combatManager.AmIFriendly == unit.Friendly
-                               && combatManager.Me.Energy >= ability.Cost
-                               && combatManager.MyTurn;
             btn.Init(() =>
-            {
-                if (ability.Blocking)
                 {
-                    UniTask.Void(async () =>
+                    if (ability.Blocking)
                     {
-                        var successful = await ability.Perform(combatManager, unit, areaSelector);
-                        if (!successful) return;
+                        UniTask.Void(async () =>
+                        {
+                            var successful = await ability.Perform(combatManager, unit, areaSelector);
+                            if (!successful) return;
+                            combatManager.Me.Energy -= ability.Cost;
+                        });
+                    }
+                    else
+                    {
                         combatManager.Me.Energy -= ability.Cost;
-                    });
-                }
-                else
-                {
-                    combatManager.Me.Energy -= ability.Cost;
-                    ability.Perform(combatManager, unit, areaSelector)
-                        .Forget();
-                }
-            }, ability, scrollUI);
+                        ability.Perform(combatManager, unit, areaSelector)
+                            .Forget();
+                    }
+                },
+                ability, scrollUI,
+                unit.Interactable
+                && combatManager.AmIFriendly == unit.Friendly
+                && combatManager.Me.Energy >= ability.Cost
+                && combatManager.MyTurn);
 
             List.Add((btn, ability.Cost));
+            LayoutRebuilder.ForceRebuildLayoutImmediate(btnsGroup);
         }
     }
 }

@@ -1,6 +1,5 @@
 using Combat;
 using Cysharp.Threading.Tasks;
-using Levels;
 using UnityEngine;
 
 namespace Content.WhirlPool
@@ -10,9 +9,9 @@ namespace Content.WhirlPool
         public string Name => "Whirl Pool";
         public int Cost => 3;
         public bool Blocking => true;
-
         public string Description =>
             "Spawns a whirl pool that sucks nearby units into the center, then disperses all units randomly onto the board";
+        public Sprite Icon => null;
 
         [SerializeField] private WhirlPoolGadget prefab;
         [SerializeField] private int spawnRadius;

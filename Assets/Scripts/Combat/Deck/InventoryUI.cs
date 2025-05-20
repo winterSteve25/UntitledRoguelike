@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Combat.Deck
@@ -11,6 +12,7 @@ namespace Combat.Deck
         [SerializeField] private Slot slotPrefab;
         [SerializeField] private ItemVisual visualPrefab;
         [SerializeField] private RectTransform everythingParent;
+        [SerializeField] private bool interactable;
 
         private Inventory _inventory;
         private List<ItemInstanceWithVisuals> _items;
@@ -52,7 +54,7 @@ namespace Combat.Deck
             var visuals = Instantiate(visualPrefab, transform.parent);
             var instance = new ItemInstanceWithVisuals(item, visuals);
 
-            visuals.Init(instance, gridLayout, _slots[item.Position.x, item.Position.y], _inventory, canvas, everythingParent);
+            visuals.Init(instance, gridLayout, _slots[item.Position.x, item.Position.y], _inventory, canvas, everythingParent, interactable);
             _items.Add(instance);
         }
         
@@ -65,6 +67,16 @@ namespace Combat.Deck
         public void AddItem(ItemType itemType, Vector2Int position)
         {
             _inventory.AddItem(itemType, position);
+        }
+
+        public void AddItemAnywhere(ItemType itemType)
+        {
+            _inventory.AddAnywhere(itemType);
+        }
+        
+        public void AddItemsAnywhere<T>(List<T> itemType) where T : ItemType
+        {
+            _inventory.AddAnywhere(itemType);
         }
 
         public void RemoveItem(Vector2Int pos)

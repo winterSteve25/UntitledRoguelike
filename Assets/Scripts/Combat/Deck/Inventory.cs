@@ -36,6 +36,32 @@ namespace Combat.Deck
             }
         }
 
+        public void AddAnywhere<T>(List<T> itemTypes) where T : ItemType
+        {
+            var items = new List<ItemInstance>();
+
+            foreach (var itemType in itemTypes)
+            {
+                for (int i = 0; i < _size.x; i++)
+                {
+                    for (int j = 0; j < _size.y; j++)
+                    {
+                        var pos = new Vector2Int(i, j);
+                        if (!CanPlaceAt(itemType, pos, items)) continue;
+                        items.Add(new ItemInstance(itemType, pos));
+                        goto endOfLoop;
+                    }
+                }
+                
+                endOfLoop: ;
+            }
+
+            foreach (var c in items)
+            {
+                AddItem(c.ItemType, c.Position, true);
+            }
+        }
+
         public void AddItem(ItemType itemType, Vector2Int position, bool skipChecks = false)
         {
             AddItemRpc(itemType.name, itemType.Category, position, skipChecks);
@@ -83,12 +109,17 @@ namespace Combat.Deck
             _itemsSync.RemoveAt(i);
         }
 
-        public bool CanPlaceAt(ItemType itemType, Vector2Int position)
+        private bool CanPlaceAt(ItemType itemType, Vector2Int position)
+        {
+            return CanPlaceAt(itemType, position, _itemsSync);
+        }
+
+        private bool CanPlaceAt(ItemType itemType, Vector2Int position, List<ItemInstance> items)
         {
             var inBound = RectangleTester.InBound(_size, Vector2Int.zero, position.x, position.y, itemType.Size.x,
                 itemType.Size.y, true, false);
 
-            return inBound && !_itemsSync.Any(x => RectangleTester.AreRectanglesOverlapping(
+            return inBound && !items.Any(x => RectangleTester.AreRectanglesOverlapping(
                 x.Position.x, x.Position.y, x.ItemType.Size.x, x.ItemType.Size.y,
                 position.x, position.y, itemType.Size.x, itemType.Size.y));
         }

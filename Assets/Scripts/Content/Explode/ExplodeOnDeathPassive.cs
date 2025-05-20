@@ -13,9 +13,9 @@ namespace Content.Explode
             unit.OnDeath += OnUnitDeath;
         }
 
-        private void OnUnitDeath(Unit obj)
+        private void OnUnitDeath(Unit unit, CancelToken cancel)
         {
-            ExplodeAbility.Explode(CombatManager.Current, obj, radius, damage);
+            ExplodeAbility.Explode(CombatManager.Current, unit, radius, damage);
         }
     }
 }

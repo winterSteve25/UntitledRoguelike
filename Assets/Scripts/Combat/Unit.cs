@@ -3,12 +3,11 @@ using Levels;
 using PrimeTween;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Combat
 {
-    public delegate void UnitHpChangeEvent(Unit unit, float original, float newHp, DamageSource source,
-        CancelToken cancel);
-
+    public delegate void UnitHpChangeEvent(Unit unit, float original, float newHp, DamageSource source, CancelToken cancel);
     public delegate void NewTurnEvent(Unit unit, bool friendlyTurn);
 
     public class CancelToken
@@ -26,7 +25,7 @@ namespace Combat
         [SerializeField] private SpriteRenderer visual;
         [SerializeField] private SpriteRenderer border;
 
-        public event Action<Unit> OnDeath;
+        public event Action<Unit, CancelToken> OnDeath;
         public event UnitHpChangeEvent OnHpChange;
         public event NewTurnEvent OnNewTurn;
         public event Action<bool> OnInteractabilityChanged;
@@ -122,7 +121,6 @@ namespace Combat
         private void Die()
         {
             TriggerDeathEventRpc();
-            CombatManager.Current.DespawnUnit(this);
         }
         
         private Vector2 GetWorldPosition(Vector2Int position)
@@ -143,7 +141,10 @@ namespace Combat
         [Rpc(SendTo.Server)]
         private void TriggerDeathEventRpc()
         {
-            OnDeath?.Invoke(this);
+            var cancelToken = new CancelToken();
+            OnDeath?.Invoke(this, cancelToken);
+            if (cancelToken.Canceled) return;
+            CombatManager.Current.DespawnUnit(this, true);
         }
 
         [Rpc(SendTo.ClientsAndHost)]

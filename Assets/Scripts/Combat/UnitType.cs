@@ -2,6 +2,7 @@ using Combat.Deck;
 using Levels;
 using Unity.Netcode;
 using UnityEngine;
+using Utils;
 
 namespace Combat
 {
@@ -25,16 +26,17 @@ namespace Combat
         public override bool CanUse(Vector2 worldPosition)
         {
             var gridPosition = GetRelativePosition(worldPosition);
+            var dy = Mathf.FloorToInt(size.y / 2f);
             
             // TODO: maybe dont hard code values?
             // restrict placement
             if (CombatManager.Current.AmIFriendly)
             {
-                if (gridPosition.y > 1) return false;
+                if (gridPosition.y + dy >= 3) return false;
             }
             else
             {
-                if (gridPosition.y < 7) return false;
+                if (gridPosition.y - dy <= 5) return false;
             }
 
             return CombatManager.Current.CanPlaceUnitAt(this, new Vector2Int(gridPosition.x, gridPosition.y));

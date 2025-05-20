@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace Combat
 {
@@ -14,6 +15,7 @@ namespace Combat
         /// </summary>
         bool Blocking { get; }
         string Description { get; }
+        Sprite Icon { get; }
 
         /// <summary>
         /// Performs the action
