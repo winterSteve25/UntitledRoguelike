@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 955
+  spritePixelsToUnits: 1030
   spriteBorder: {x: 366, y: 110, z: 355, w: 129}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
