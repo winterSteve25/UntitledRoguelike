@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Prefab>k__BackingField: {fileID: 9167722102969840024, guid: 3f2a54338c45c644890917a9d9d4431c, type: 3}
   <Name>k__BackingField: Queen
-  <MaxHp>k__BackingField: 1
+  <MaxHp>k__BackingField: 2
   size: {x: 1, y: 2}
   cost: 2
+  spawnEffect: {fileID: 6418180475301049370, guid: a638fb5e3afaeba4d9e6d7088c8d171a, type: 2}

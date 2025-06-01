@@ -7,12 +7,13 @@ using UnityEngine.InputSystem;
 public class Test : MonoBehaviour
 {
     [SerializeField] private InventoryUI inventoryUI;
-    [SerializeField] private List<UnitType> givens;
     [SerializeField] private Camera cam;
+    [SerializeField] private List<UnitType> givens;
+    [SerializeField] private List<UnitType> givensOpponent;
         
     private void Start()
     {
-        inventoryUI.AddItemsAnywhere(givens);
+        inventoryUI.AddItemsAnywhere(CombatManager.Current.AmIFriendly ? givens : givensOpponent);
     }
 
     private void Update()

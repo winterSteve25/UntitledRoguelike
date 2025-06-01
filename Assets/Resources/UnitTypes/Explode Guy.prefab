@@ -146,8 +146,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8625e8f6b2204434b4183f293826df73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   radius: 1
-  damage: 2
+  damage: 4
+  aboutToExplode: {fileID: 21300000, guid: 777a24adb334431498dad24bd14c59b5, type: 3}
+  aboutToMask: {fileID: 21300000, guid: e5ba941e810653c4db3bb0a1821397f1, type: 3}
+  visual: {fileID: 6558192680116160276}
+  mask: {fileID: 5891881775851690275}
 --- !u!1 &5805107507205697238
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,8 +276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8c9db3cc38d4f69a435c8102fb5729a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 1
-  damage: 2
+  ability: {fileID: 2488368219199338368}
 --- !u!1 &8122594712607699113
 GameObject:
   m_ObjectHideFlags: 0

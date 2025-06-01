@@ -5,8 +5,7 @@ namespace Content.Explode
 {
     public class ExplodeOnDeathPassive : MonoBehaviour, IPassive
     {
-        [SerializeField] private int radius;
-        [SerializeField] private int damage;
+        [SerializeField] private ExplodeAbility ability;
         
         public void OnSpawned(Unit unit)
         {
@@ -15,7 +14,7 @@ namespace Content.Explode
 
         private void OnUnitDeath(Unit unit, CancelToken cancel)
         {
-            ExplodeAbility.Explode(CombatManager.Current, unit, radius, damage);
+            ability.Explode(CombatManager.Current, unit);
         }
     }
 }

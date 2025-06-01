@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3ee9cb887e9489182d070cfdb207a0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 0.5
+  damage: 1
   attackRadius: 1
   mode: 2
 --- !u!1 &5542329253833166431

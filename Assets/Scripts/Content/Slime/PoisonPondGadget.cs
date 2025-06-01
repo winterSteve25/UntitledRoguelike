@@ -5,7 +5,7 @@ namespace Content.Slime
 {
     public class PoisonPondGadget : Gadget
     {
-        [SerializeField] private float damage;
+        [SerializeField] private int damage;
 
         public override Vector2Int GridSize => Vector2Int.one;
 

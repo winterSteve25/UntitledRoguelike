@@ -1,3 +1,4 @@
+using System.Globalization;
 using Levels;
 using PrimeTween;
 using TMPro;
@@ -123,9 +124,9 @@ namespace Combat.UI
             unit.OnInteractabilityChanged -= UnitInteractableChange;
         }
 
-        private void ChangeHp(Unit unit, float original, float current, DamageSource source, CancelToken cancelToken)
+        private void ChangeHp(Unit unit, int original, int current, DamageSource source, CancelToken cancelToken)
         {
-            hp.text = current.ToString("F1");
+            hp.text = current.ToString();
         }
 
         public void UnitInteractableChange(bool interactable)

@@ -138,12 +138,12 @@ namespace Combat
                 {
                     var pos = new Vector2Int(center.x + i, center.y + j);
                     var wp = Unit.GetWorldPosition(pos, Vector2Int.one);
-                    
+
                     if (flipboard)
                     {
                         pos -= new Vector2Int(dx, dy);
                     }
-
+                    
                     if (!_isValid(pos))
                     {
                         continue;
@@ -158,7 +158,7 @@ namespace Combat
                     {
                         continue;
                     }
-                    
+
                     var visual = _moveablePool.Get();
                     visual.transform.position = wp;
                     _activeObjects.Add(visual);
@@ -183,8 +183,8 @@ namespace Combat
         {
             return IsValid(_center, _centerSize, pos, _targetSize, _radius, _mode, flipboard);
         }
-        
-       private static bool IsValid(Vector2Int center, Vector2Int centerSize, Vector2Int target, Vector2Int targetSize,
+
+        private static bool IsValid(Vector2Int center, Vector2Int centerSize, Vector2Int target, Vector2Int targetSize,
             int radius, SpotSelectionMode mode, bool flipboard)
         {
             // TODO:
@@ -192,12 +192,20 @@ namespace Combat
             // lowk no idea why the other ones need to flip but it seems to work
             // at one point in the future probably should investigate and clean it up
             if (!Level.Current.InBounds(target, targetSize, false)) return false;
-            if (RectangleTester.InBound(centerSize, center, target.x, target.y, false, flipboard)) return false;
             if (!RectangleTester.InBound(
                     new Vector2Int(radius, radius) * 2 + centerSize,
-                    center - new Vector2Int(radius, radius), 
-                    target.x, target.y, true, flipboard)) 
+                    center - new Vector2Int(radius, radius),
+                    target.x, target.y, true, flipboard))
                 return false;
+            
+            if (centerSize == Vector2Int.one)
+            {
+                if (target == center) return false;
+            }
+            else
+            {
+                if (RectangleTester.InBound(centerSize, center, target.x, target.y, false, flipboard)) return false;
+            }
 
             if (mode == SpotSelectionMode.Straight)
             {

@@ -12,7 +12,7 @@ namespace Content.General
             unit.OnHpChange += UnitOnOnHpChange;
         }
 
-        private void UnitOnOnHpChange(Unit unit, float original, float current, DamageSource source, CancelToken cancel)
+        private void UnitOnOnHpChange(Unit unit, int original, int current, DamageSource source, CancelToken cancel)
         {
             if (this.source == source) cancel.Canceled = true;
         }

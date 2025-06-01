@@ -2,7 +2,7 @@ using Combat.Deck;
 using Levels;
 using Unity.Netcode;
 using UnityEngine;
-using Utils;
+using UnityEngine.Audio;
 
 namespace Combat
 {
@@ -14,9 +14,10 @@ namespace Combat
         [field: SerializeField]
         public string Name { get; private set; }
 
-        [field: SerializeField] public float MaxHp { get; private set; }
+        [field: SerializeField] public int MaxHp { get; private set; }
         [SerializeField] private Vector2Int size;
         [SerializeField] private int cost;
+        [SerializeField] private AudioResource spawnEffect;
 
         public override Vector2Int Size => size;
         public override int Cost => cost;

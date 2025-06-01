@@ -15,15 +15,15 @@ namespace Combat.Deck
         private Camera _cam;
         private InventoryUI.ItemInstanceWithVisuals _thisInstance;
         private bool _followMouse;
-        private Slot _slot;
-        private Inventory _inventory;
         private RectTransform _deckParent;
         private bool _interactable;
+        protected Slot Slot;
+        protected Inventory Inventory;
 
         private void Update()
         {
             if (_followMouse) return;
-            transform.position = _slot.transform.position;
+            transform.position = Slot.transform.position;
         }
 
         public void Init(InventoryUI.ItemInstanceWithVisuals item, GridLayoutGroup grid, Slot position,
@@ -35,8 +35,8 @@ namespace Combat.Deck
             _interactable = interactable;
             _cam = canvas.worldCamera;
             _thisInstance = item;
-            _slot = position;
-            _inventory = inventory;
+            Slot = position;
+            Inventory = inventory;
 
             if (interactable)
             {
@@ -55,7 +55,7 @@ namespace Combat.Deck
                 item.ItemType.Size.y * grid.cellSize.y +
                 grid.spacing.y * Mathf.Max(0, item.ItemType.Size.y - 1));
             
-            transform.position = _slot.transform.position;
+            transform.position = Slot.transform.position;
         }
 
         private void FollowMouse()
@@ -75,7 +75,7 @@ namespace Combat.Deck
             _followMouse = false;
             rectTransform.pivot = new Vector2(0, 0);
             followBehaviour.enabled = false;
-            transform.position = _slot.transform.position;
+            transform.position = Slot.transform.position;
             image.raycastTarget = true;
         }
 
@@ -114,10 +114,10 @@ namespace Combat.Deck
 
         private void TryPlaceIn(Vector2Int pos)
         {
-            if (_inventory.CanMoveTo(_thisInstance.Instance, pos))
+            if (Inventory.CanMoveTo(_thisInstance.Instance, pos))
             {
-                _inventory.RemoveItem(_slot.Pos);
-                _inventory.AddItem(_thisInstance.ItemType, pos);
+                Inventory.RemoveItem(Slot.Pos);
+                Inventory.AddItem(_thisInstance.ItemType, pos);
             }
             else
             {
@@ -125,7 +125,7 @@ namespace Combat.Deck
             }
         }
 
-        private void TryUseOrCancel()
+        protected virtual void TryUseOrCancel()
         {
             var pos = _cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             var combatManager = CombatManager.Current;
@@ -136,7 +136,7 @@ namespace Combat.Deck
             {
                 combatManager.Me.Energy -= _thisInstance.ItemType.Cost;
                 _thisInstance.ItemType.Use(pos);
-                _inventory.RemoveItem(_slot.Pos);
+                Inventory.RemoveItem(Slot.Pos);
                 return;
             }
 

@@ -164,31 +164,31 @@ namespace Combat
 
             // TODO
             // WHEN SLIME DIES IT SPLITS BUT IT WILL FIRST DESPAWN AND TRIGGER DEATH..
-            if (!isDeath)
-            {
-                return;
-            }
-
-            bool? f = null;
-            foreach (var u in _activeUnitsSync)
-            {
-                if (u == unit) continue;
-                if (f == null)
-                {
-                    f = u.Friendly;
-                    continue;
-                }
-
-                // checks if every remaining unit is on 1 team
-                if (u.Friendly == f) continue;
-
-                // if one is not the same team then stop right here
-                return;
-            }
-
-            // if the code reaches here all units are on the same team
-            // then the opposing team loses
-            NetworkManager.Shutdown();
+            // if (!isDeath)
+            // {
+            //     return;
+            // }
+            //
+            // bool? f = null;
+            // foreach (var u in _activeUnitsSync)
+            // {
+            //     if (u == unit) continue;
+            //     if (f == null)
+            //     {
+            //         f = u.Friendly;
+            //         continue;
+            //     }
+            //
+            //     // checks if every remaining unit is on 1 team
+            //     if (u.Friendly == f) continue;
+            //
+            //     // if one is not the same team then stop right here
+            //     return;
+            // }
+            //
+            // // if the code reaches here all units are on the same team
+            // // then the opposing team loses
+            // NetworkManager.Shutdown();
         }
 
         [Rpc(SendTo.Server)]
@@ -202,6 +202,11 @@ namespace Combat
         private void RemoveUnitFromListRpc(NetworkBehaviourReference unit)
         {
             if (!unit.TryGet(out Unit u, NetworkManager)) return;
+            if (selectedUnitUI.Showing == u)
+            {
+                selectedUnitUI.Show(null);
+            }
+            
             _activeUnitsSync.Remove(u);
         }
 

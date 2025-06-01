@@ -1,12 +1,17 @@
 using Combat;
 using Cysharp.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Content.Slime
 {
-    public class SplitAbility : MonoBehaviour, IAbility
+    public class SplitAbility : NetworkBehaviour, IAbility
     {
         [SerializeField] private UnitType smallSlime;
+        [SerializeField] private SpriteRenderer visual;
+        [SerializeField] private SpriteRenderer mask;
+        [SerializeField] private Sprite aboutTo;
+        [SerializeField] private Sprite aboutToMask;
 
         public string Name => "Split";
         public int Cost => 1;
@@ -17,10 +22,18 @@ namespace Content.Slime
         public async UniTask<bool> Perform(CombatManager combatManager, Unit unit, IAreaSelector areaSelector)
         {
             unit.Interactable = false;
+            ChangeTextureRpc();
             await IAbility.UntilNextFriendlyTurn(combatManager);
             combatManager.DespawnUnit(unit, false);
             SpawnSmallSlimes(combatManager, unit, smallSlime);
             return true;
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void ChangeTextureRpc()
+        {
+            visual.sprite = aboutTo;
+            mask.sprite = aboutToMask;
         }
 
         public static void SpawnSmallSlimes(CombatManager combatManager, Unit unit, UnitType unitType)

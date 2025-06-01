@@ -4,10 +4,12 @@ using PrimeTween;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Utils;
 
 namespace Combat
 {
-    public delegate void UnitHpChangeEvent(Unit unit, float original, float newHp, DamageSource source, CancelToken cancel);
+    public delegate void UnitHpChangeEvent(Unit unit, int original, int newHp, DamageSource source, CancelToken cancel);
+
     public delegate void NewTurnEvent(Unit unit, bool friendlyTurn);
 
     public class CancelToken
@@ -17,9 +19,9 @@ namespace Combat
 
     public class Unit : NetworkBehaviour
     {
-        private static readonly Color FriendlyColor = new Color(74 / 255f, 194 / 255f, 112 / 255f);
-        private static readonly Color UnfriendlyColor = new Color(202 / 255f, 70 / 255f, 92 / 255f);
-        
+        public static readonly Color FriendlyColor = new Color(74 / 255f, 194 / 255f, 112 / 255f);
+        public static readonly Color UnfriendlyColor = new Color(202 / 255f, 70 / 255f, 92 / 255f);
+
         [SerializeField] private GameObject abilitiesParent;
         [SerializeField] private GameObject passivesParent;
         [SerializeField] private SpriteRenderer visual;
@@ -38,14 +40,15 @@ namespace Combat
         public IPassive[] Passives { get; private set; }
 
         // ReSharper disable once FieldCanBeMadeReadOnly.Local
-        private NetworkVariable<float> _hp = new();
-        public float Hp
+        private NetworkVariable<int> _hp = new();
+
+        public int Hp
         {
             get => _hp.Value;
             private set
             {
                 _hp.Value = value;
-                
+
                 if (value <= 0)
                 {
                     Die();
@@ -54,6 +57,7 @@ namespace Combat
         }
 
         private bool _interactable;
+
         public bool Interactable
         {
             get => _interactable;
@@ -88,6 +92,11 @@ namespace Combat
             }
         }
 
+        private void OnEnable()
+        {
+            _hp.OnValueChanged += OnHpChanged;
+        }
+
         public override void OnDestroy()
         {
             base.OnDestroy();
@@ -95,6 +104,16 @@ namespace Combat
             OnNewTurn = null;
             OnHpChange = null;
             OnInteractabilityChanged = null;
+            _hp.OnValueChanged -= OnHpChanged;
+        }
+
+        private void OnHpChanged(int previousvalue, int newvalue)
+        {
+            if (previousvalue == 0) return;
+            if (previousvalue == newvalue) return;
+
+            var wasHealed = previousvalue < newvalue;
+            DamageNumberSpawner.Current.SpawnNumber(transform.position, newvalue - previousvalue, wasHealed);
         }
 
         public void NextTurn(bool friendlyTurn)
@@ -110,7 +129,7 @@ namespace Combat
         }
 
         [Rpc(SendTo.Server)]
-        public void AddHpRpc(float amount, DamageSource source)
+        public void AddHpRpc(int amount, DamageSource source)
         {
             var cancel = new CancelToken();
             OnHpChange?.Invoke(this, Hp, Hp + amount, source, cancel);
@@ -122,7 +141,7 @@ namespace Combat
         {
             TriggerDeathEventRpc();
         }
-        
+
         private Vector2 GetWorldPosition(Vector2Int position)
         {
             return GetWorldPosition(position, Type.Size);
@@ -137,7 +156,7 @@ namespace Combat
 
             return Level.Current.CellToWorld(position);
         }
-        
+
         [Rpc(SendTo.Server)]
         private void TriggerDeathEventRpc()
         {
@@ -145,6 +164,12 @@ namespace Combat
             OnDeath?.Invoke(this, cancelToken);
             if (cancelToken.Canceled) return;
             CombatManager.Current.DespawnUnit(this, true);
+            TriggerDeathAnimationRpc();
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void TriggerDeathAnimationRpc()
+        {
         }
 
         [Rpc(SendTo.ClientsAndHost)]

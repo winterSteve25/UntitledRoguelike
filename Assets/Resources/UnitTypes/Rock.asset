@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Prefab>k__BackingField: {fileID: 8862800393429092892, guid: d9dfc1390dac0dd4fbf3cbfd54f7f30a, type: 3}
   <Name>k__BackingField: The Nut
-  <MaxHp>k__BackingField: 4
+  <MaxHp>k__BackingField: 8
   size: {x: 1, y: 1}
   cost: 1

@@ -43,19 +43,27 @@ namespace Utils
 
             var wp = _parentCanvas.worldCamera.ScreenToWorldPoint(mousePosition);
             wp.z = 0;
-            var gp = Level.Current.WorldToCell(wp);
-            var useSnappedPosition = snapToGridIfPossible && CanSnapToGrid(gp);
+            var useSnappedPosition = snapToGridIfPossible;
 
             if (useSnappedPosition)
             {
-                if (!_wasOnGrid)
+                var gp = Level.Current.WorldToCell(wp);
+                if (CanSnapToGrid(gp))
                 {
-                    _originPivot = _rectTransform.pivot;
-                }
+                    if (!_wasOnGrid)
+                    {
+                        _originPivot = _rectTransform.pivot;
+                    }
 
-                mousePosition = _parentCanvas.worldCamera.WorldToScreenPoint(GetMousePositionOnGrid(gp));
-                _rectTransform.pivot = Vector2.zero;
-                _wasOnGrid = true;
+                    mousePosition = _parentCanvas.worldCamera.WorldToScreenPoint(GetMousePositionOnGrid(gp));
+                    _rectTransform.pivot = Vector2.zero;
+                    _wasOnGrid = true;
+                }
+                else if (_wasOnGrid)
+                {
+                    _wasOnGrid = false;
+                    _rectTransform.pivot = _originPivot;
+                }
             }
             else if (_wasOnGrid)
             {
